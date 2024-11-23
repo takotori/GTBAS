@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using ProjectD.addons.gas.effects;
 
@@ -19,6 +21,7 @@ public partial class AttributeContainer : Node
 
     [Export] protected AttributeSet attributeSet;
     protected Dictionary<string, Attribute> attributes;
+    protected List<Effect> effects;
 
     public override void _Ready()
     {
@@ -44,8 +47,6 @@ public partial class AttributeContainer : Node
         if (!HasAttribute(attribute))
         {
             attribute.AttributeChanged += AttributeChanged;
-            attribute.EffectApplied += EffectApplied;
-            attribute.EffectRemoved += EffectRemoved;
             attributes.Add(attribute.GetAttributeName(), attribute);
         }
     }
@@ -56,26 +57,57 @@ public partial class AttributeContainer : Node
         if (HasAttribute(attribute))
         {
             attribute.AttributeChanged -= AttributeChanged;
-            attribute.EffectApplied -= EffectApplied;
-            attribute.EffectRemoved -= EffectRemoved;
             attributes.Remove(attribute.GetAttributeName());
         }
     }
 
-    private void ApplyEffect(Effect effect)
+    private void AddEffect(Effect effect)
     {
-        if (effect == null) return;
-        var attribute = FindAttributeByName(effect.GetAffectedAttributeName());
-        attribute?.AddEffect(effect);
-    }
-    
-    private void RemoveEffect(Effect effect)
-    {
-        if (effect == null) return;
-        foreach (var attribute in attributes.Values)
+        switch (effect.GetEffectExecution())
         {
-            attribute.RemoveEffect(effect);
+            case EffectExecution.Instant:
+                var list = effect.GetAffectedAttributeNames().Select(FindAttributeByName).ToList();
+                effect.ApplyEffect(list);
+                break;
+            case EffectExecution.EndOfPlayerTurn:
+            case EffectExecution.StartOfPlayerTurn:
+                if (HasEffect(effect))
+                {
+                    var existingEffect = effects.First(e => e.Equals(effect));
+                    existingEffect.SetCurrentDuration(existingEffect.GetMaxDuration());
+                }
+                else
+                {
+                    effects.Add(effect);
+                }
+
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+
+        EmitSignal("OnEffectApplied", effect);
+    }
+
+    public void RemoveEffect(Effect effect)
+    {
+        // todo create function to reduce duration
+        if (!HasEffect(effect)) return;
+
+        effects.Remove(effect);
+
+        // todo check if this works
+        foreach (var effect1 in effects.ToList())
+        {
+            if (!effect1.Equals(effect)) continue;
+            effects.Remove(effect);
+            EmitSignal("EffectRemoved", effect);
+        }
+    }
+
+    private bool HasEffect(Effect effect)
+    {
+        return effects.Any(effect1 => effect1.Equals(effect));
     }
 
     private Attribute FindAttributeByName(string name)
@@ -88,11 +120,6 @@ public partial class AttributeContainer : Node
         EmitSignal("OnAttributeChanged", attribute, oldValue, newValue);
     }
 
-    private void EffectApplied(Effect effect)
-    {
-        EmitSignal("OnEffectApplied", effect);
-    }
-
     private void EffectRemoved(Effect effect)
     {
         EmitSignal("OnEffectRemoved", effect);
@@ -102,6 +129,6 @@ public partial class AttributeContainer : Node
     {
         return attributes.ContainsKey(attribute.GetAttributeName());
     }
-    
+
     public AttributeSet GetAttributeSet() => attributeSet;
 }

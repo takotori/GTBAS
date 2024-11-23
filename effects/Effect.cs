@@ -1,4 +1,7 @@
-﻿using Godot;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Godot;
+using ProjectD.addons.gas.attributes;
 
 namespace ProjectD.addons.gas.effects;
 
@@ -6,46 +9,55 @@ namespace ProjectD.addons.gas.effects;
 [GlobalClass]
 public partial class Effect : Resource
 {
-    protected string effectName;
-    protected string affectedAttribute;
-    protected int duration;
-    protected int maxStacks;
-    protected bool isUnique;
-    protected EffectOperation effectOperation;
-    protected EffectExecution effectExecution;
+    [Export] protected string effectName;
 
-    public float ApplyEffect(float baseValue)
+    private int currentDuration;
+    private int currentStacks;
+
+    [Export] protected int maxDuration;
+    [Export] protected int maxStacks;
+    [Export] protected EffectExecution effectExecution;
+    [Export] protected EffectModifier[] effectModifiers;
+
+    public void ApplyEffect(List<Attribute> attributes)
     {
-        return effectOperation?.Operate(baseValue) ?? 0f;
+        foreach (var effectModifier in effectModifiers)
+        {
+            var attribute = attributes.First(a => a.GetAttributeName() == effectModifier.GetAffectedAttributeName());
+            effectModifier.Operate(attribute);
+        }
     }
-    
+
     public string GetEffectName() => effectName;
-    
-    public string GetAffectedAttributeName() => affectedAttribute;
-    
-    public int GetDuration() => duration;
-    
+
+    public HashSet<string> GetAffectedAttributeNames() =>
+        effectModifiers.Select(e => e.GetAffectedAttributeName()).ToHashSet();
+
+    public int GetCurrentDuration() => currentDuration;
+
+    public int GetMaxDuration() => maxDuration;
+
+    public int GetCurrentStacks() => currentStacks;
+
     public int GetMaxStacks() => maxStacks;
     
-    public bool GetIsUnique() => isUnique;
-    
-    public EffectOperation GetEffectOperation() => effectOperation;
-    
     public EffectExecution GetEffectExecution() => effectExecution;
-    
+
+    public EffectModifier[] GetEffectModifiers() => effectModifiers;
+
     public void SetEffectName(string newName) => effectName = newName;
-    
-    public void SetAffectedAttribute(string newAttribute) => affectedAttribute = newAttribute;
-    
-    public void SetDuration(int newDuration) => duration = newDuration;
-    
+
+    public void SetCurrentDuration(int newDuration) => currentDuration = newDuration;
+
+    public void SetMaxDuration(int newDuration) => maxDuration = newDuration;
+
+    public void SetCurrentStacks(int newCurrentStacks) => currentStacks = newCurrentStacks;
+
     public void SetMaxStacks(int newMaxStacks) => maxStacks = newMaxStacks;
     
-    public void SetIsUnique(bool newIsUnique) => isUnique = newIsUnique;
-    
-    public void SetEffectOperation(EffectOperation newOperation) => effectOperation = newOperation;
-    
     public void SetEffectExecution(EffectExecution newExecution) => effectExecution = newExecution;
+
+    public void SetEffectModifiers(EffectModifier[] newModifiers) => effectModifiers = newModifiers;
 
     public bool Equals(Effect other)
     {
