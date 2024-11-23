@@ -13,13 +13,21 @@ public partial class Attribute : Resource
     [Export] protected string attributeName;
     [Export] protected float baseValue;
     [Export] protected float currentValue;
-    
+    [Export] protected float minValue;
+    [Export] protected float maxValue = -1;
+
     public string GetAttributeName() => attributeName;
 
-    public void SetAttributeName(string newName) => attributeName = newName;
+    public float GetBaseValue() => baseValue;
 
     public float GetCurrentValue() => currentValue;
+    
+    public float GetMinValue() => minValue;
+    
+    public float GetMaxValue() => maxValue;
 
+    public void SetAttributeName(string newName) => attributeName = newName;
+    
     public void SetCurrentValue(float newValue)
     {
         var oldValue = currentValue;
@@ -30,10 +38,12 @@ public partial class Attribute : Resource
         }
     }
 
-    public float GetBaseValue() => baseValue;
-
     public void SetBaseValue(float NewValue) => baseValue = NewValue;
-
+    
+    public void SetMinValue(float newValue) => minValue = newValue;
+    
+    public void SetMaxValue(float newValue) => maxValue = newValue;
+    
     protected bool Equals(Attribute other)
     {
         return attributeName == other.attributeName;

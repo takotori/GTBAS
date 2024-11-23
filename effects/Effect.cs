@@ -11,14 +11,14 @@ public partial class Effect : Resource
 {
     [Export] protected string effectName;
 
-    private int currentDuration;
-    private int currentStacks;
-
     [Export] protected int maxDuration;
     [Export] protected int maxStacks;
     [Export] protected EffectExecution effectExecution;
     [Export] protected EffectModifier[] effectModifiers;
 
+    private int currentDuration;
+    private int currentStacks;
+    
     public void ApplyEffect(List<Attribute> attributes)
     {
         foreach (var effectModifier in effectModifiers)

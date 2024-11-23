@@ -40,6 +40,36 @@ public partial class EffectModifier : Resource
         }
     }
 
+    public bool CanOperate(Attribute attribute)
+    {
+        var newValue = 0f;
+        switch (operand)
+        {
+            case OperationType.Add:
+                newValue = attribute.GetCurrentValue() + value;
+                break;
+            case OperationType.Multiply:
+                newValue = attribute.GetCurrentValue() * value;
+                break;
+            case OperationType.Divide:
+                newValue = Math.Abs(value) < float.Epsilon ? 0 : attribute.GetCurrentValue() / value;
+                break;
+            case OperationType.Percentage:
+                newValue = attribute.GetCurrentValue() + attribute.GetCurrentValue() / 100 * value;
+                break;
+            case OperationType.Override:
+                newValue = value;
+                break;
+        }
+
+        if (Math.Abs(attribute.GetMaxValue() - -1) < 0.1f)
+        {
+            return newValue > attribute.GetMinValue();
+        }
+
+        return newValue > attribute.GetMinValue() && newValue <= attribute.GetMaxValue();
+    }
+
     public string GetAffectedAttributeName() => affectedAttributeName;
 
     public OperationType GetOperand() => operand;

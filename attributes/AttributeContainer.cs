@@ -20,7 +20,7 @@ public partial class AttributeContainer : Node
     public delegate void OnEffectRemovedEventHandler(Effect effect);
 
     [Export] protected AttributeSet attributeSet;
-    protected Dictionary<string, Attribute> attributes;
+    private Dictionary<string, Attribute> attributes = new();
     protected List<Effect> effects;
 
     public override void _Ready()
@@ -105,14 +105,19 @@ public partial class AttributeContainer : Node
         }
     }
 
+    public Attribute FindAttributeByName(string name)
+    {
+        return attributes.TryGetValue(name, out var attribute) ? attribute : null;
+    }
+
+    public List<Attribute> FindAttributesByName(HashSet<string> name)
+    {
+        return name.Select(FindAttributeByName).ToList();
+    }
+
     private bool HasEffect(Effect effect)
     {
         return effects.Any(effect1 => effect1.Equals(effect));
-    }
-
-    private Attribute FindAttributeByName(string name)
-    {
-        return attributes.TryGetValue(name, out var attribute) ? attribute : null;
     }
 
     private void AttributeChanged(Attribute attribute, float oldValue, float newValue)
