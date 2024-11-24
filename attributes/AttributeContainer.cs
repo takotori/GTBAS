@@ -61,12 +61,12 @@ public partial class AttributeContainer : Node
         }
     }
 
-    private void AddEffect(Effect effect)
+    public void AddEffect(Effect effect)
     {
         switch (effect.GetEffectExecution())
         {
             case EffectExecution.Instant:
-                var list = effect.GetAffectedAttributeNames().Select(FindAttributeByName).ToList();
+                var list = effect.GetAffectedAttributeNames().Select(GetAttributeByName).ToList();
                 effect.ApplyEffect(list);
                 break;
             case EffectExecution.EndOfPlayerTurn:
@@ -89,6 +89,14 @@ public partial class AttributeContainer : Node
         EmitSignal("OnEffectApplied", effect);
     }
 
+    public void AddEffects(Effect[] effects)
+    {
+        foreach (var effect in effects)
+        {
+            AddEffect(effect);
+        }
+    }
+
     public void RemoveEffect(Effect effect)
     {
         // todo create function to reduce duration
@@ -105,14 +113,14 @@ public partial class AttributeContainer : Node
         }
     }
 
-    public Attribute FindAttributeByName(string name)
+    public Attribute GetAttributeByName(string name)
     {
         return attributes.TryGetValue(name, out var attribute) ? attribute : null;
     }
 
-    public List<Attribute> FindAttributesByName(HashSet<string> name)
+    public List<Attribute> GetAttributesByName(HashSet<string> name)
     {
-        return name.Select(FindAttributeByName).ToList();
+        return name.Select(GetAttributeByName).ToList();
     }
 
     private bool HasEffect(Effect effect)

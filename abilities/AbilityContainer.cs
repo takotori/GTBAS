@@ -27,13 +27,23 @@ public partial class AbilityContainer : Node
         }
     }
 
-    public bool ActivateAbility(string abilityName)
+    public virtual bool ActivateAbility(int abilityIndex)
     {
-        var ability = FindAbilityByName(abilityName);
+        return ActivateAbility(GetAbilityByIndex(abilityIndex));
+    }
+
+    public virtual bool ActivateAbility(string abilityName)
+    {
+        return ActivateAbility(GetAbilityByName(abilityName));
+    }
+
+    virtual protected bool ActivateAbility(Ability ability)
+    {
         if (ability == null) return false;
         if (HasAbility(ability) && CanActivateAbility(ability))
         {
-            ability.ActivateAbility();
+            CommitAbility(ability);
+            ability.ActivateAbility(this);
             EmitSignal("OnAbilityActivated");
             return true;
         }
@@ -41,13 +51,30 @@ public partial class AbilityContainer : Node
         return false;
     }
 
-    private bool CanActivateAbility(Ability ability)
+    public virtual void CommitAbility(Ability ability)
+    {
+        foreach (var abilityCost in ability.GetCosts())
+        {
+            var attributes = attributeContainer.GetAttributesByName(abilityCost.GetAffectedAttributeNames());
+            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count) return;
+
+            foreach (var effectCost in abilityCost.GetEffectModifiers())
+            {
+                foreach (var attribute in attributes)
+                {
+                    effectCost.Operate(attribute);
+                }
+            }
+        }
+    }
+
+    public virtual bool CanActivateAbility(Ability ability)
     {
         if (ability.GetCurrentCooldown() > 0) return false;
 
         foreach (var abilityCost in ability.GetCosts())
         {
-            var attributes = attributeContainer.FindAttributesByName(abilityCost.GetAffectedAttributeNames());
+            var attributes = attributeContainer.GetAttributesByName(abilityCost.GetAffectedAttributeNames());
             if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count) return false;
 
             foreach (var effectCost in abilityCost.GetEffectModifiers())
@@ -90,24 +117,30 @@ public partial class AbilityContainer : Node
         return false;
     }
 
-    public Ability FindAbilityByName(string name)
+    public Ability GetAbilityByName(string name)
     {
         return abilities.FirstOrDefault(a => a.GetAbilityName() == name);
     }
 
-    private bool HasAbility(Ability ability)
+    public Ability GetAbilityByIndex(int index)
+    {
+        if (index < 0 || index >= abilities.Count) return null;
+        return abilities[index];
+    }
+
+    protected bool HasAbility(Ability ability)
     {
         return abilities.Any(a => a.Equals(ability));
     }
 
     private void AbilityActivated(Ability ability)
     {
-        EmitSignal("OnAbilityActivated");
+        EmitSignal("OnAbilityActivated", ability);
     }
 
     private void AbilityEnded(Ability ability)
     {
-        EmitSignal("OnAbilityEnded");
+        EmitSignal("OnAbilityEnded", ability);
     }
 
     public AttributeContainer GetAttributeContainer() => attributeContainer;

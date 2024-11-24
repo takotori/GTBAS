@@ -21,7 +21,7 @@ public partial class Ability : Resource
 
     private int currentCooldown;
 
-    public virtual void ActivateAbility()
+    public virtual void ActivateAbility(AbilityContainer abilityContainer)
     {
         EmitSignal("AbilityActivated", this);
     }
@@ -40,6 +40,8 @@ public partial class Ability : Resource
     public int GetCooldown() => cooldown;
 
     public int GetCurrentCooldown() => currentCooldown;
+    
+    public AbilityPattern GetPattern() => pattern;
 
     public void SetAbilityName(string newName) => abilityName = newName;
 
@@ -50,6 +52,8 @@ public partial class Ability : Resource
     public void SetCooldown(int newCooldown) => cooldown = newCooldown;
 
     public void SetCurrentCooldown(int newCooldown) => currentCooldown = newCooldown;
+    
+    public void SetPattern(AbilityPattern newPattern) => pattern = newPattern;
 
     public bool Equals(Ability other)
     {
