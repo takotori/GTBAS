@@ -61,7 +61,7 @@ public partial class AttributeContainer : Node
         }
     }
 
-    public void AddEffect(Effect effect)
+    public void ApplyEffect(Effect effect)
     {
         switch (effect.GetEffectExecution())
         {
@@ -89,11 +89,11 @@ public partial class AttributeContainer : Node
         EmitSignal("OnEffectApplied", effect);
     }
 
-    public void AddEffects(Effect[] effects)
+    public void ApplyEffects(Effect[] effects)
     {
         foreach (var effect in effects)
         {
-            AddEffect(effect);
+            ApplyEffect(effect);
         }
     }
 

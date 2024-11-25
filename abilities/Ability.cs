@@ -17,7 +17,6 @@ public partial class Ability : Resource
     [Export] protected Effect[] effects = [];
     [Export] protected Effect[] costs = [];
     [Export] protected int cooldown;
-    [Export] protected AbilityPattern pattern;
 
     private int currentCooldown;
 
@@ -41,8 +40,6 @@ public partial class Ability : Resource
 
     public int GetCurrentCooldown() => currentCooldown;
     
-    public AbilityPattern GetPattern() => pattern;
-
     public void SetAbilityName(string newName) => abilityName = newName;
 
     public void SetEffects(Effect[] newEffects) => effects = newEffects;
@@ -53,8 +50,6 @@ public partial class Ability : Resource
 
     public void SetCurrentCooldown(int newCooldown) => currentCooldown = newCooldown;
     
-    public void SetPattern(AbilityPattern newPattern) => pattern = newPattern;
-
     public bool Equals(Ability other)
     {
         return abilityName == other.abilityName;

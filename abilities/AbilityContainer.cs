@@ -2,6 +2,7 @@
 using System.Linq;
 using Godot;
 using ProjectD.addons.gas.attributes;
+using ProjectD.addons.gas.effects;
 
 namespace ProjectD.addons.gas.abilities;
 
@@ -27,17 +28,17 @@ public partial class AbilityContainer : Node
         }
     }
 
-    public virtual bool ActivateAbility(int abilityIndex)
+    public virtual bool TryActivateAbility(int abilityIndex)
     {
-        return ActivateAbility(GetAbilityByIndex(abilityIndex));
+        return TryActivateAbility(GetAbilityByIndex(abilityIndex));
     }
 
-    public virtual bool ActivateAbility(string abilityName)
+    public virtual bool TryActivateAbility(string abilityName)
     {
-        return ActivateAbility(GetAbilityByName(abilityName));
+        return TryActivateAbility(GetAbilityByName(abilityName));
     }
 
-    virtual protected bool ActivateAbility(Ability ability)
+    virtual protected bool TryActivateAbility(Ability ability)
     {
         if (ability == null) return false;
         if (HasAbility(ability) && CanActivateAbility(ability))
@@ -87,6 +88,16 @@ public partial class AbilityContainer : Node
         }
 
         return true;
+    }
+
+    public void ApplyEffectsToSelf(Effect[] effects)
+    {
+        attributeContainer.ApplyEffects(effects);
+    }
+    
+    public void ApplyEffectsToTarget(AbilityContainer target, Effect[] effects)
+    {
+        target.GetAttributeContainer().ApplyEffects(effects);
     }
 
     public bool AddAbility(Ability ability)
@@ -145,5 +156,5 @@ public partial class AbilityContainer : Node
 
     public AttributeContainer GetAttributeContainer() => attributeContainer;
 
-    public Ability[] GetAbilities() => abilities.ToArray();
+    public virtual Ability[] GetAbilities() => abilities.ToArray();
 }
