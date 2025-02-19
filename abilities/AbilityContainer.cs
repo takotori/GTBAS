@@ -94,7 +94,7 @@ public partial class AbilityContainer : Node
     {
         attributeContainer.ApplyEffects(effects);
     }
-    
+
     public void ApplyEffectsToTarget(AbilityContainer target, Effect[] effects)
     {
         target.GetAttributeContainer().ApplyEffects(effects);
@@ -154,7 +154,13 @@ public partial class AbilityContainer : Node
         EmitSignal("OnAbilityEnded", ability);
     }
 
-    public AttributeContainer GetAttributeContainer() => attributeContainer;
+    public AttributeContainer GetAttributeContainer()
+    {
+        return attributeContainer;
+    }
 
-    public virtual Ability[] GetAbilities() => abilities.ToArray();
+    public virtual Ability[] GetAbilities()
+    {
+        return abilities.ToArray();
+    }
 }

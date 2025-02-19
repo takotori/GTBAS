@@ -70,17 +70,35 @@ public partial class EffectModifier : Resource
         return newValue > attribute.GetMinValue() && newValue <= attribute.GetMaxValue();
     }
 
-    public string GetAffectedAttributeName() => affectedAttributeName;
+    public string GetAffectedAttributeName()
+    {
+        return affectedAttributeName;
+    }
 
-    public OperationType GetOperand() => operand;
+    public OperationType GetOperand()
+    {
+        return operand;
+    }
 
-    public float GetValue() => value;
+    public float GetValue()
+    {
+        return value;
+    }
 
-    public void SetAffectedAttributeName(string newAttribute) => affectedAttributeName = newAttribute;
+    public void SetAffectedAttributeName(string newAttribute)
+    {
+        affectedAttributeName = newAttribute;
+    }
 
-    public void SetOperand(OperationType newOperand) => operand = newOperand;
+    public void SetOperand(OperationType newOperand)
+    {
+        operand = newOperand;
+    }
 
-    public void SetValue(float newValue) => value = newValue;
+    public void SetValue(float newValue)
+    {
+        value = newValue;
+    }
 
     public override void _ValidateProperty(Dictionary property)
     {

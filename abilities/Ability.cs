@@ -30,26 +30,56 @@ public partial class Ability : Resource
         EmitSignal("AbilityEnded", this);
     }
 
-    public string GetAbilityName() => abilityName;
+    public string GetAbilityName()
+    {
+        return abilityName;
+    }
 
-    public Effect[] GetEffects() => effects;
+    public Effect[] GetEffects()
+    {
+        return effects;
+    }
 
-    public Effect[] GetCosts() => costs;
+    public Effect[] GetCosts()
+    {
+        return costs;
+    }
 
-    public int GetCooldown() => cooldown;
+    public int GetCooldown()
+    {
+        return cooldown;
+    }
 
-    public int GetCurrentCooldown() => currentCooldown;
-    
-    public void SetAbilityName(string newName) => abilityName = newName;
+    public int GetCurrentCooldown()
+    {
+        return currentCooldown;
+    }
 
-    public void SetEffects(Effect[] newEffects) => effects = newEffects;
+    public void SetAbilityName(string newName)
+    {
+        abilityName = newName;
+    }
 
-    public void SetCosts(Effect[] newCosts) => costs = newCosts;
+    public void SetEffects(Effect[] newEffects)
+    {
+        effects = newEffects;
+    }
 
-    public void SetCooldown(int newCooldown) => cooldown = newCooldown;
+    public void SetCosts(Effect[] newCosts)
+    {
+        costs = newCosts;
+    }
 
-    public void SetCurrentCooldown(int newCooldown) => currentCooldown = newCooldown;
-    
+    public void SetCooldown(int newCooldown)
+    {
+        cooldown = newCooldown;
+    }
+
+    public void SetCurrentCooldown(int newCooldown)
+    {
+        currentCooldown = newCooldown;
+    }
+
     public bool Equals(Ability other)
     {
         return abilityName == other.abilityName;

@@ -18,7 +18,7 @@ public partial class Effect : Resource
 
     private int currentDuration;
     private int currentStacks;
-    
+
     public void ApplyEffect(List<Attribute> attributes)
     {
         foreach (var effectModifier in effectModifiers)
@@ -28,36 +28,80 @@ public partial class Effect : Resource
         }
     }
 
-    public string GetEffectName() => effectName;
+    public string GetEffectName()
+    {
+        return effectName;
+    }
 
-    public HashSet<string> GetAffectedAttributeNames() =>
-        effectModifiers.Select(e => e.GetAffectedAttributeName()).ToHashSet();
+    public HashSet<string> GetAffectedAttributeNames()
+    {
+        return effectModifiers.Select(e => e.GetAffectedAttributeName()).ToHashSet();
+    }
 
-    public int GetCurrentDuration() => currentDuration;
+    public int GetCurrentDuration()
+    {
+        return currentDuration;
+    }
 
-    public int GetMaxDuration() => maxDuration;
+    public int GetMaxDuration()
+    {
+        return maxDuration;
+    }
 
-    public int GetCurrentStacks() => currentStacks;
+    public int GetCurrentStacks()
+    {
+        return currentStacks;
+    }
 
-    public int GetMaxStacks() => maxStacks;
-    
-    public EffectExecution GetEffectExecution() => effectExecution;
+    public int GetMaxStacks()
+    {
+        return maxStacks;
+    }
 
-    public EffectModifier[] GetEffectModifiers() => effectModifiers;
+    public EffectExecution GetEffectExecution()
+    {
+        return effectExecution;
+    }
 
-    public void SetEffectName(string newName) => effectName = newName;
+    public EffectModifier[] GetEffectModifiers()
+    {
+        return effectModifiers;
+    }
 
-    public void SetCurrentDuration(int newDuration) => currentDuration = newDuration;
+    public void SetEffectName(string newName)
+    {
+        effectName = newName;
+    }
 
-    public void SetMaxDuration(int newDuration) => maxDuration = newDuration;
+    public void SetCurrentDuration(int newDuration)
+    {
+        currentDuration = newDuration;
+    }
 
-    public void SetCurrentStacks(int newCurrentStacks) => currentStacks = newCurrentStacks;
+    public void SetMaxDuration(int newDuration)
+    {
+        maxDuration = newDuration;
+    }
 
-    public void SetMaxStacks(int newMaxStacks) => maxStacks = newMaxStacks;
-    
-    public void SetEffectExecution(EffectExecution newExecution) => effectExecution = newExecution;
+    public void SetCurrentStacks(int newCurrentStacks)
+    {
+        currentStacks = newCurrentStacks;
+    }
 
-    public void SetEffectModifiers(EffectModifier[] newModifiers) => effectModifiers = newModifiers;
+    public void SetMaxStacks(int newMaxStacks)
+    {
+        maxStacks = newMaxStacks;
+    }
+
+    public void SetEffectExecution(EffectExecution newExecution)
+    {
+        effectExecution = newExecution;
+    }
+
+    public void SetEffectModifiers(EffectModifier[] newModifiers)
+    {
+        effectModifiers = newModifiers;
+    }
 
     public bool Equals(Effect other)
     {

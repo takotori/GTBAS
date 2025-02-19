@@ -143,5 +143,8 @@ public partial class AttributeContainer : Node
         return attributes.ContainsKey(attribute.GetAttributeName());
     }
 
-    public AttributeSet GetAttributeSet() => attributeSet;
+    public AttributeSet GetAttributeSet()
+    {
+        return attributeSet;
+    }
 }

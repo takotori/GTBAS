@@ -53,7 +53,13 @@ public partial class AttributeSet : Resource
         return null;
     }
 
-    public Godot.Collections.Array<Attribute> GetAttributes() => attributes;
+    public Godot.Collections.Array<Attribute> GetAttributes()
+    {
+        return attributes;
+    }
 
-    public string GetAttributeSetName() => attributeSetName;
+    public string GetAttributeSetName()
+    {
+        return attributeSetName;
+    }
 }
