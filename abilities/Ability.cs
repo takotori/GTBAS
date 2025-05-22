@@ -13,10 +13,17 @@ public partial class Ability : Resource
     [Signal]
     public delegate void AbilityEndedEventHandler(Ability ability);
 
-    [Export] protected string abilityName;
-    [Export] protected Effect[] effects = [];
-    [Export] protected Effect[] costs = [];
-    [Export] protected int cooldown;
+    [Export]
+    protected string abilityName;
+
+    [Export]
+    protected Effect[] effects = [];
+
+    [Export]
+    protected Effect[] costs = [];
+
+    [Export]
+    protected int cooldown;
 
     private int currentCooldown;
 

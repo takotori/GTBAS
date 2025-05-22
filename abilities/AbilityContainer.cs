@@ -14,16 +14,19 @@ public partial class AbilityContainer : Node
     [Signal]
     public delegate void OnAbilityEndedEventHandler(Ability ability);
 
-    [Export] public AttributeContainer attributeContainer;
+    [Export]
+    public AttributeContainer attributeContainer;
 
-    [Export] protected Ability[] defaultAbilities = [];
+    [Export]
+    protected Ability[] defaultAbilities = [];
     public List<Ability> abilities = [];
 
     public override void _Ready()
     {
         foreach (var defaultAbility in defaultAbilities)
         {
-            if (defaultAbility == null) continue;
+            if (defaultAbility == null)
+                continue;
             AddAbility(defaultAbility);
         }
     }
@@ -38,9 +41,10 @@ public partial class AbilityContainer : Node
         return TryActivateAbility(GetAbilityByName(abilityName));
     }
 
-    virtual protected bool TryActivateAbility(Ability ability)
+    protected virtual bool TryActivateAbility(Ability ability)
     {
-        if (ability == null) return false;
+        if (ability == null)
+            return false;
         if (HasAbility(ability) && CanActivateAbility(ability))
         {
             CommitAbility(ability);
@@ -56,8 +60,11 @@ public partial class AbilityContainer : Node
     {
         foreach (var abilityCost in ability.GetCosts())
         {
-            var attributes = attributeContainer.GetAttributesByName(abilityCost.GetAffectedAttributeNames());
-            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count) return;
+            var attributes = attributeContainer.GetAttributesByName(
+                abilityCost.GetAffectedAttributeNames()
+            );
+            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
+                return;
 
             foreach (var effectCost in abilityCost.GetEffectModifiers())
             {
@@ -71,18 +78,23 @@ public partial class AbilityContainer : Node
 
     public virtual bool CanActivateAbility(Ability ability)
     {
-        if (ability.GetCurrentCooldown() > 0) return false;
+        if (ability.GetCurrentCooldown() > 0)
+            return false;
 
         foreach (var abilityCost in ability.GetCosts())
         {
-            var attributes = attributeContainer.GetAttributesByName(abilityCost.GetAffectedAttributeNames());
-            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count) return false;
+            var attributes = attributeContainer.GetAttributesByName(
+                abilityCost.GetAffectedAttributeNames()
+            );
+            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
+                return false;
 
             foreach (var effectCost in abilityCost.GetEffectModifiers())
             {
                 foreach (var attribute in attributes)
                 {
-                    if (!effectCost.CanOperate(attribute)) return false;
+                    if (!effectCost.CanOperate(attribute))
+                        return false;
                 }
             }
         }
@@ -102,7 +114,8 @@ public partial class AbilityContainer : Node
 
     public bool AddAbility(Ability ability)
     {
-        if (ability == null) return false;
+        if (ability == null)
+            return false;
         if (!HasAbility(ability))
         {
             ability.AbilityActivated += AbilityActivated;
@@ -116,7 +129,8 @@ public partial class AbilityContainer : Node
 
     public bool RemoveAbility(Ability ability)
     {
-        if (ability == null) return false;
+        if (ability == null)
+            return false;
         if (HasAbility(ability))
         {
             ability.AbilityActivated -= AbilityActivated;
@@ -135,7 +149,8 @@ public partial class AbilityContainer : Node
 
     public Ability GetAbilityByIndex(int index)
     {
-        if (index < 0 || index >= abilities.Count) return null;
+        if (index < 0 || index >= abilities.Count)
+            return null;
         return abilities[index];
     }
 

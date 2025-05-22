@@ -9,10 +9,14 @@ public partial class GodotAbilitySystem : EditorPlugin
         base._EnterTree();
         var icon = GD.Load<Texture2D>("res://addons/gas/Node.png");
 
-        var attributeContainerScript = GD.Load<Script>("res://addons/gas/attributes/AttributeContainer.cs");
+        var attributeContainerScript = GD.Load<Script>(
+            "res://addons/gas/attributes/AttributeContainer.cs"
+        );
         AddCustomType("AttributeContainer", "Node", attributeContainerScript, icon);
 
-        var abilityContainerScript = GD.Load<Script>("res://addons/gas/abilities/AbilityContainer.cs");
+        var abilityContainerScript = GD.Load<Script>(
+            "res://addons/gas/abilities/AbilityContainer.cs"
+        );
         AddCustomType("AbilityContainer", "Node", abilityContainerScript, icon);
     }
 

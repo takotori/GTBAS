@@ -6,8 +6,11 @@ namespace ProjectD.addons.gas.attributes;
 [GlobalClass]
 public partial class AttributeSet : Resource
 {
-    [Export] protected string attributeSetName;
-    [Export] protected Godot.Collections.Array<Attribute> attributes;
+    [Export]
+    protected string attributeSetName;
+
+    [Export]
+    protected Godot.Collections.Array<Attribute> attributes;
 
     public AttributeSet()
     {
@@ -22,7 +25,8 @@ public partial class AttributeSet : Resource
 
     public bool AddAttribute(Attribute newAttribute)
     {
-        if (attributes.Contains(newAttribute)) return false;
+        if (attributes.Contains(newAttribute))
+            return false;
         attributes.Add(newAttribute);
 
         return true;
@@ -30,7 +34,8 @@ public partial class AttributeSet : Resource
 
     public bool RemoveAttribute(Attribute attribute)
     {
-        if (!attributes.Contains(attribute)) return false;
+        if (!attributes.Contains(attribute))
+            return false;
         attributes.Remove(attribute);
         return true;
     }

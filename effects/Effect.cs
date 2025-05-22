@@ -9,12 +9,20 @@ namespace ProjectD.addons.gas.effects;
 [GlobalClass]
 public partial class Effect : Resource
 {
-    [Export] protected string effectName;
+    [Export]
+    protected string effectName;
 
-    [Export] protected int maxDuration;
-    [Export] protected int maxStacks;
-    [Export] protected EffectExecution effectExecution;
-    [Export] protected EffectModifier[] effectModifiers;
+    [Export]
+    protected int maxDuration;
+
+    [Export]
+    protected int maxStacks;
+
+    [Export]
+    protected EffectExecution effectExecution;
+
+    [Export]
+    protected EffectModifier[] effectModifiers;
 
     private int currentDuration;
     private int currentStacks;
@@ -23,7 +31,9 @@ public partial class Effect : Resource
     {
         foreach (var effectModifier in effectModifiers)
         {
-            var attribute = attributes.First(a => a.GetAttributeName() == effectModifier.GetAffectedAttributeName());
+            var attribute = attributes.First(a =>
+                a.GetAttributeName() == effectModifier.GetAffectedAttributeName()
+            );
             effectModifier.Operate(attribute);
         }
     }

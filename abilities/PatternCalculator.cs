@@ -6,7 +6,11 @@ namespace ProjectD.addons.gas.abilities;
 
 public static class PatternCalculator
 {
-    public static HashSet<Vector2> GetAbilityRange(Vector3 Target, Pattern Pattern, Vector2I MinMaxRange)
+    public static HashSet<Vector2> GetAbilityRange(
+        Vector3 Target,
+        Pattern Pattern,
+        Vector2I MinMaxRange
+    )
     {
         HashSet<Vector2I> TilesInRange = [];
         switch (Pattern)
@@ -31,8 +35,12 @@ public static class PatternCalculator
         return OffsetIndexArray(TilesInRange, Target);
     }
 
-    public static HashSet<Vector2> GetAoeAbilityRange(Vector3 Origin, Vector3 Target, AoePattern Pattern,
-        Vector2I MinMaxRange)
+    public static HashSet<Vector2> GetAoeAbilityRange(
+        Vector3 Origin,
+        Vector3 Target,
+        AoePattern Pattern,
+        Vector2I MinMaxRange
+    )
     {
         HashSet<Vector2I> TilesInRange = [];
         var Direction = FindRelativeDirection(Origin, Target);
@@ -63,7 +71,10 @@ public static class PatternCalculator
         return OffsetIndexArray(TilesInRange, Target);
     }
 
-    private static HashSet<Vector2I> GetAoeLinePattern(Vector2I MinMaxRange, RelativeDirection Direction)
+    private static HashSet<Vector2I> GetAoeLinePattern(
+        Vector2I MinMaxRange,
+        RelativeDirection Direction
+    )
     {
         HashSet<Vector2I> TilesInRange = [];
         for (var i = MinMaxRange.X; i < MinMaxRange.Y; i++)
@@ -86,7 +97,10 @@ public static class PatternCalculator
         return TilesInRange;
     }
 
-    private static HashSet<Vector2I> GetAoeHorizontalLinePattern(Vector2I MinMaxRange, RelativeDirection Direction)
+    private static HashSet<Vector2I> GetAoeHorizontalLinePattern(
+        Vector2I MinMaxRange,
+        RelativeDirection Direction
+    )
     {
         HashSet<Vector2I> TilesInRange = [];
         for (var i = MinMaxRange.X; i < MinMaxRange.Y; i++)
@@ -117,7 +131,10 @@ public static class PatternCalculator
         return TilesInRange;
     }
 
-    private static HashSet<Vector2I> GetAoeConePattern(Vector2I MinMaxRange, RelativeDirection Direction)
+    private static HashSet<Vector2I> GetAoeConePattern(
+        Vector2I MinMaxRange,
+        RelativeDirection Direction
+    )
     {
         HashSet<Vector2I> TilesInRange = [];
         var Width = 1;
@@ -128,19 +145,23 @@ public static class PatternCalculator
             {
                 case RelativeDirection.Up:
 
-                    for (var j = -Width; j <= Width; j++) TilesInRange.Add(new Vector2I(j, i));
+                    for (var j = -Width; j <= Width; j++)
+                        TilesInRange.Add(new Vector2I(j, i));
 
                     break;
                 case RelativeDirection.Down:
-                    for (var j = -Width; j <= Width; j++) TilesInRange.Add(new Vector2I(j, -i));
+                    for (var j = -Width; j <= Width; j++)
+                        TilesInRange.Add(new Vector2I(j, -i));
 
                     break;
                 case RelativeDirection.Left:
-                    for (var j = -Width; j <= Width; j++) TilesInRange.Add(new Vector2I(-i, j));
+                    for (var j = -Width; j <= Width; j++)
+                        TilesInRange.Add(new Vector2I(-i, j));
 
                     break;
                 case RelativeDirection.Right:
-                    for (var j = -Width; j <= Width; j++) TilesInRange.Add(new Vector2I(i, j));
+                    for (var j = -Width; j <= Width; j++)
+                        TilesInRange.Add(new Vector2I(i, j));
 
                     break;
             }
@@ -240,5 +261,5 @@ public enum RelativeDirection
     Up,
     Down,
     Left,
-    Right
+    Right,
 }

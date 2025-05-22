@@ -6,5 +6,5 @@ public enum OperationType
     Multiply,
     Divide,
     Percentage,
-    Override
+    Override,
 }

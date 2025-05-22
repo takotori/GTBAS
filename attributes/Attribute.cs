@@ -8,13 +8,26 @@ namespace ProjectD.addons.gas.attributes;
 public partial class Attribute : Resource
 {
     [Signal]
-    public delegate void AttributeChangedEventHandler(Attribute attribute, float oldValue, float newValue);
+    public delegate void AttributeChangedEventHandler(
+        Attribute attribute,
+        float oldValue,
+        float newValue
+    );
 
-    [Export] protected string attributeName;
-    [Export] protected float baseValue;
-    [Export] protected float currentValue;
-    [Export] protected float minValue;
-    [Export] protected float maxValue = -1;
+    [Export]
+    protected string attributeName;
+
+    [Export]
+    protected float baseValue;
+
+    [Export]
+    protected float currentValue;
+
+    [Export]
+    protected float minValue;
+
+    [Export]
+    protected float maxValue = -1;
 
     public string GetAttributeName()
     {

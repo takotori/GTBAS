@@ -4,5 +4,5 @@ public enum EffectExecution
 {
     Instant,
     EndOfPlayerTurn,
-    StartOfPlayerTurn
+    StartOfPlayerTurn,
 }

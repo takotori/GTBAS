@@ -6,11 +6,20 @@ namespace ProjectD.addons.gas.abilities;
 [GlobalClass]
 public partial class AbilityPattern : Resource
 {
-    [Export] public AoePattern AoePattern { get; set; }
-    [Export] public Vector2I MinMaxAoeRange { get; set; }
-    [Export] public Pattern RangePattern { get; set; }
-    [Export] public Vector2I MinMaxRange { get; set; }
-    [Export] public CenterPoint CenterPoint { get; set; }
+    [Export]
+    public AoePattern AoePattern { get; set; }
+
+    [Export]
+    public Vector2I MinMaxAoeRange { get; set; }
+
+    [Export]
+    public Pattern RangePattern { get; set; }
+
+    [Export]
+    public Vector2I MinMaxRange { get; set; }
+
+    [Export]
+    public CenterPoint CenterPoint { get; set; }
 }
 
 public enum Pattern
@@ -19,7 +28,7 @@ public enum Pattern
     Diagonal,
     Star,
     Diamond,
-    Square
+    Square,
 }
 
 public enum AoePattern
@@ -29,7 +38,7 @@ public enum AoePattern
     HorizontalLine,
     Diamond,
     Square,
-    Cone
+    Cone,
 }
 
 public enum CenterPoint
@@ -37,5 +46,5 @@ public enum CenterPoint
     Target, // Must be centered on enemy
     Self, // Must be centered on self
     Ally, // Must be centered on ally
-    Area // Can be centered anywhere   
+    Area, // Can be centered anywhere
 }

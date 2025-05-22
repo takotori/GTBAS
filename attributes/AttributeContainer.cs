@@ -11,7 +11,11 @@ namespace ProjectD.addons.gas.attributes;
 public partial class AttributeContainer : Node
 {
     [Signal]
-    public delegate void OnAttributeChangedEventHandler(Attribute attribute, float oldValue, float newValue);
+    public delegate void OnAttributeChangedEventHandler(
+        Attribute attribute,
+        float oldValue,
+        float newValue
+    );
 
     [Signal]
     public delegate void OnEffectAppliedEventHandler(Effect effect);
@@ -19,7 +23,8 @@ public partial class AttributeContainer : Node
     [Signal]
     public delegate void OnEffectRemovedEventHandler(Effect effect);
 
-    [Export] protected AttributeSet attributeSet;
+    [Export]
+    protected AttributeSet attributeSet;
     private Dictionary<string, Attribute> attributes = new();
     protected List<Effect> effects;
 
@@ -42,7 +47,8 @@ public partial class AttributeContainer : Node
 
     private void AddAttribute(Attribute attribute)
     {
-        if (attribute == null) return;
+        if (attribute == null)
+            return;
 
         if (!HasAttribute(attribute))
         {
@@ -53,7 +59,8 @@ public partial class AttributeContainer : Node
 
     private void RemoveAttribute(Attribute attribute)
     {
-        if (attribute == null) return;
+        if (attribute == null)
+            return;
         if (HasAttribute(attribute))
         {
             attribute.AttributeChanged -= AttributeChanged;
@@ -100,14 +107,16 @@ public partial class AttributeContainer : Node
     public void RemoveEffect(Effect effect)
     {
         // todo create function to reduce duration
-        if (!HasEffect(effect)) return;
+        if (!HasEffect(effect))
+            return;
 
         effects.Remove(effect);
 
         // todo check if this works
         foreach (var effect1 in effects.ToList())
         {
-            if (!effect1.Equals(effect)) continue;
+            if (!effect1.Equals(effect))
+                continue;
             effects.Remove(effect);
             EmitSignal("EffectRemoved", effect);
         }
