@@ -7,12 +7,6 @@ namespace ProjectD.addons.gas.abilities;
 [GlobalClass]
 public partial class Ability : Resource
 {
-    [Signal]
-    public delegate void AbilityActivatedEventHandler(Ability ability);
-
-    [Signal]
-    public delegate void AbilityEndedEventHandler(Ability ability);
-
     [Export]
     protected string abilityName;
 
@@ -27,15 +21,9 @@ public partial class Ability : Resource
 
     private int currentCooldown;
 
-    public virtual void ActivateAbility(AbilityContainer abilityContainer)
-    {
-        EmitSignal("AbilityActivated", this);
-    }
+    public virtual void ActivateAbility() { }
 
-    public virtual void EndAbility()
-    {
-        EmitSignal("AbilityEnded", this);
-    }
+    public virtual void EndAbility() { }
 
     public string GetAbilityName()
     {

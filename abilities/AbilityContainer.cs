@@ -8,12 +8,6 @@ namespace ProjectD.addons.gas.abilities;
 
 public partial class AbilityContainer : Node
 {
-    [Signal]
-    public delegate void OnAbilityActivatedEventHandler(Ability ability);
-
-    [Signal]
-    public delegate void OnAbilityEndedEventHandler(Ability ability);
-
     [Export]
     public AttributeContainer attributeContainer;
 
@@ -41,15 +35,14 @@ public partial class AbilityContainer : Node
         return TryActivateAbility(GetAbilityByName(abilityName));
     }
 
-    protected virtual bool TryActivateAbility(Ability ability)
+    virtual protected bool TryActivateAbility(Ability ability)
     {
         if (ability == null)
             return false;
         if (HasAbility(ability) && CanActivateAbility(ability))
         {
             CommitAbility(ability);
-            ability.ActivateAbility(this);
-            EmitSignal("OnAbilityActivated");
+            ability.ActivateAbility();
             return true;
         }
 
@@ -118,8 +111,6 @@ public partial class AbilityContainer : Node
             return false;
         if (!HasAbility(ability))
         {
-            ability.AbilityActivated += AbilityActivated;
-            ability.AbilityEnded += AbilityEnded;
             abilities.Add(ability);
             return true;
         }
@@ -133,8 +124,6 @@ public partial class AbilityContainer : Node
             return false;
         if (HasAbility(ability))
         {
-            ability.AbilityActivated -= AbilityActivated;
-            ability.AbilityEnded -= AbilityEnded;
             abilities.Remove(ability);
             return true;
         }
@@ -159,15 +148,9 @@ public partial class AbilityContainer : Node
         return abilities.Any(a => a.Equals(ability));
     }
 
-    private void AbilityActivated(Ability ability)
-    {
-        EmitSignal("OnAbilityActivated", ability);
-    }
+    private void AbilityActivated(Ability ability) { }
 
-    private void AbilityEnded(Ability ability)
-    {
-        EmitSignal("OnAbilityEnded", ability);
-    }
+    private void AbilityEnded(Ability ability) { }
 
     public AttributeContainer GetAttributeContainer()
     {
