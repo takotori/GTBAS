@@ -12,8 +12,9 @@ public partial class AbilityContainer : Node
     public AttributeContainer attributeContainer;
 
     [Export]
-    protected Ability[] defaultAbilities = [];
-    public List<Ability> abilities = [];
+    private AbilityData[] defaultAbilities = [];
+
+    public List<AbilityData> abilities = [];
 
     public override void _Ready()
     {
@@ -35,13 +36,15 @@ public partial class AbilityContainer : Node
         return TryActivateAbility(GetAbilityByName(abilityName));
     }
 
-    virtual protected bool TryActivateAbility(Ability ability)
+    protected virtual bool TryActivateAbility(AbilityData abilityData)
     {
-        if (ability == null)
+        if (abilityData == null)
             return false;
-        if (HasAbility(ability) && CanActivateAbility(ability))
+        if (HasAbility(abilityData) && CanActivateAbility(abilityData))
         {
-            CommitAbility(ability);
+            CommitAbility(abilityData);
+            var ability = abilityData.GetAbilityScene().Instantiate<Ability>();
+            AddChild(ability);
             ability.ActivateAbility();
             return true;
         }
@@ -49,7 +52,7 @@ public partial class AbilityContainer : Node
         return false;
     }
 
-    public virtual void CommitAbility(Ability ability)
+    public virtual void CommitAbility(AbilityData ability)
     {
         foreach (var abilityCost in ability.GetCosts())
         {
@@ -69,11 +72,8 @@ public partial class AbilityContainer : Node
         }
     }
 
-    public virtual bool CanActivateAbility(Ability ability)
+    public virtual bool CanActivateAbility(AbilityData ability)
     {
-        if (ability.GetCurrentCooldown() > 0)
-            return false;
-
         foreach (var abilityCost in ability.GetCosts())
         {
             var attributes = attributeContainer.GetAttributesByName(
@@ -105,7 +105,7 @@ public partial class AbilityContainer : Node
         target.GetAttributeContainer().ApplyEffects(effects);
     }
 
-    public bool AddAbility(Ability ability)
+    public bool AddAbility(AbilityData ability)
     {
         if (ability == null)
             return false;
@@ -118,7 +118,7 @@ public partial class AbilityContainer : Node
         return false;
     }
 
-    public bool RemoveAbility(Ability ability)
+    public bool RemoveAbility(AbilityData ability)
     {
         if (ability == null)
             return false;
@@ -131,19 +131,19 @@ public partial class AbilityContainer : Node
         return false;
     }
 
-    public Ability GetAbilityByName(string name)
+    public AbilityData GetAbilityByName(string name)
     {
         return abilities.FirstOrDefault(a => a.GetAbilityName() == name);
     }
 
-    public Ability GetAbilityByIndex(int index)
+    public AbilityData GetAbilityByIndex(int index)
     {
         if (index < 0 || index >= abilities.Count)
             return null;
         return abilities[index];
     }
 
-    protected bool HasAbility(Ability ability)
+    protected bool HasAbility(AbilityData ability)
     {
         return abilities.Any(a => a.Equals(ability));
     }
@@ -157,7 +157,7 @@ public partial class AbilityContainer : Node
         return attributeContainer;
     }
 
-    public virtual Ability[] GetAbilities()
+    public virtual AbilityData[] GetAbilities()
     {
         return abilities.ToArray();
     }
