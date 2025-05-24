@@ -26,29 +26,8 @@ public partial class AbilityContainer : Node
         }
     }
 
-    public virtual bool TryActivateAbility(int abilityIndex)
+    public virtual bool TryActivateAbility(AbilityData abilityData)
     {
-        return TryActivateAbility(GetAbilityByIndex(abilityIndex));
-    }
-
-    public virtual bool TryActivateAbility(string abilityName)
-    {
-        return TryActivateAbility(GetAbilityByName(abilityName));
-    }
-
-    protected virtual bool TryActivateAbility(AbilityData abilityData)
-    {
-        if (abilityData == null)
-            return false;
-        if (HasAbility(abilityData) && CanActivateAbility(abilityData))
-        {
-            CommitAbility(abilityData);
-            var ability = abilityData.GetAbilityScene().Instantiate<Ability>();
-            AddChild(ability);
-            ability.ActivateAbility();
-            return true;
-        }
-
         return false;
     }
 
@@ -129,11 +108,6 @@ public partial class AbilityContainer : Node
         }
 
         return false;
-    }
-
-    public AbilityData GetAbilityByName(string name)
-    {
-        return abilities.FirstOrDefault(a => a.GetAbilityName() == name);
     }
 
     public AbilityData GetAbilityByIndex(int index)

@@ -1,4 +1,5 @@
 ﻿using Godot;
+using Godot.Collections;
 
 namespace ProjectD.addons.gas.attributes;
 
@@ -10,14 +11,14 @@ public partial class AttributeSet : Resource
     protected string attributeSetName;
 
     [Export]
-    protected Godot.Collections.Array<Attribute> attributes;
+    protected Array<Attribute> attributes;
 
     public AttributeSet()
     {
         attributes = [];
     }
 
-    public AttributeSet(Godot.Collections.Array<Attribute> attributes, string name)
+    public AttributeSet(Array<Attribute> attributes, string name)
     {
         attributeSetName = name;
         this.attributes = attributes;
@@ -58,7 +59,7 @@ public partial class AttributeSet : Resource
         return null;
     }
 
-    public Godot.Collections.Array<Attribute> GetAttributes()
+    public Array<Attribute> GetAttributes()
     {
         return attributes;
     }

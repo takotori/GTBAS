@@ -1,4 +1,6 @@
-﻿using Godot;
+﻿using System;
+using Godot;
+using ProjectD.scripts.events;
 
 namespace ProjectD.addons.gas.abilities;
 
@@ -6,7 +8,14 @@ namespace ProjectD.addons.gas.abilities;
 [GlobalClass]
 public partial class Ability : Node3D, IAbility
 {
-    public void ActivateAbility() { }
+    public event EventHandler OnEffectTriggered;
 
-    public void EndAbility() { }
+    public void ActivateAbility(Vector3 position) { }
+
+    public void TriggerEffect() { }
+
+    public void EndAbility()
+    {
+        Events.Instance.EmitSignal("OnAbilityEnded");
+    }
 }
