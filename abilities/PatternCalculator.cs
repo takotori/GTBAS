@@ -6,8 +6,8 @@ namespace ProjectD.addons.gas.abilities;
 
 public static class PatternCalculator
 {
-    public static HashSet<Vector2> GetAbilityRange(
-        Vector3 Target,
+    public static HashSet<Vector2I> GetAbilityRange(
+        Vector2I Target,
         Pattern Pattern,
         Vector2I MinMaxRange
     )
@@ -35,9 +35,9 @@ public static class PatternCalculator
         return OffsetIndexArray(TilesInRange, Target);
     }
 
-    public static HashSet<Vector2> GetAoeAbilityRange(
-        Vector3 Origin,
-        Vector3 Target,
+    public static HashSet<Vector2I> GetAoeAbilityRange(
+        Vector2I Origin,
+        Vector2I Target,
         AoePattern Pattern,
         Vector2I MinMaxRange
     )
@@ -237,18 +237,21 @@ public static class PatternCalculator
         return TilesInRange;
     }
 
-    private static HashSet<Vector2> OffsetIndexArray(HashSet<Vector2I> TilesInRange, Vector3 Offset)
+    private static HashSet<Vector2I> OffsetIndexArray(
+        HashSet<Vector2I> TilesInRange,
+        Vector2I Offset
+    )
     {
-        HashSet<Vector2> OffsetTiles = [];
+        HashSet<Vector2I> OffsetTiles = [];
         foreach (var TileInRange in TilesInRange)
-            OffsetTiles.Add(new Vector2(TileInRange.X + Offset.X, TileInRange.Y + Offset.Z));
+            OffsetTiles.Add(new Vector2I(TileInRange.X + Offset.X, TileInRange.Y + Offset.Y));
 
         return OffsetTiles;
     }
 
-    private static RelativeDirection FindRelativeDirection(Vector3 Origin, Vector3 Target)
+    private static RelativeDirection FindRelativeDirection(Vector2 Origin, Vector2 Target)
     {
-        var Direction = new Vector2(Target.X - Origin.X, Target.Z - Origin.Z);
+        var Direction = new Vector2(Target.X - Origin.X, Target.Y - Origin.Y);
         if (Mathf.Abs(Direction.X) > Mathf.Abs(Direction.Y))
             return Direction.X > 0 ? RelativeDirection.Right : RelativeDirection.Left;
 
