@@ -6,7 +6,6 @@ using ProjectD.addons.gas.effects;
 
 namespace ProjectD.addons.gas.attributes;
 
-[Tool]
 [GlobalClass]
 public partial class AttributeContainer : Node
 {
