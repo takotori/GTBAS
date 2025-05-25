@@ -10,6 +10,9 @@ public partial class AbilityData : Resource
     private string abilityName;
 
     [Export]
+    private Texture2D abilityIcon;
+
+    [Export]
     private Effect[] effects = [];
 
     [Export]
@@ -24,6 +27,11 @@ public partial class AbilityData : Resource
     public string GetAbilityName()
     {
         return abilityName;
+    }
+
+    public Texture2D GetAbilityIcon()
+    {
+        return abilityIcon;
     }
 
     public Effect[] GetEffects()
