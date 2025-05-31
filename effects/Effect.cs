@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using ProjectD.addons.gas.attributes;
+using Godot.Collections;
+using Attribute = ProjectD.addons.gas.attributes.Attribute;
 
 namespace ProjectD.addons.gas.effects;
 
@@ -9,6 +11,10 @@ namespace ProjectD.addons.gas.effects;
 [GlobalClass]
 public partial class Effect : Resource
 {
+    private EffectExecution _effectExecution;
+    private int currentDuration;
+    private int currentStacks;
+
     [Export]
     protected string effectName;
 
@@ -19,13 +25,20 @@ public partial class Effect : Resource
     protected int maxStacks;
 
     [Export]
-    protected EffectExecution effectExecution;
+    protected EffectExecution effectExecution
+    {
+        get => _effectExecution;
+        set
+        {
+            _effectExecution = value;
+            NotifyPropertyListChanged();
+        }
+    }
 
     [Export]
     protected EffectModifier[] effectModifiers;
 
-    private int currentDuration;
-    private int currentStacks;
+    public EffectCalculation EffectCalculation { get; set; }
 
     public void ApplyEffect(List<Attribute> attributes)
     {
@@ -36,6 +49,27 @@ public partial class Effect : Resource
             );
             effectModifier.Operate(attribute);
         }
+    }
+
+    public override Array<Dictionary> _GetPropertyList()
+    {
+        var properties = new Array<Dictionary>();
+
+        if (effectExecution == EffectExecution.Instant)
+        {
+            properties.Add(
+                new Dictionary
+                {
+                    { "name", "EffectCalculation" },
+                    { "type", (int)Variant.Type.Object },
+                    { "usage", (int)PropertyUsageFlags.Default },
+                    { "hint", (int)PropertyHint.ResourceType },
+                    { "hint_string", nameof(EffectCalculation) },
+                }
+            );
+        }
+
+        return properties;
     }
 
     public string GetEffectName()

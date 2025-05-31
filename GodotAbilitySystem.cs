@@ -18,12 +18,19 @@ public partial class GodotAbilitySystem : EditorPlugin
             "res://addons/gas/abilities/AbilityContainer.cs"
         );
         AddCustomType("AbilityContainer", "Node", abilityContainerScript, icon);
+        
+        var abilitySystemScript = GD.Load<Script>(
+            "res://addons/gas/abilities/AbilitySystem.cs"
+        );
+        AddCustomType("AbilitySystem", "Node", abilitySystemScript, icon);
+
     }
 
     public override void _ExitTree()
     {
         RemoveCustomType("AttributeContainer");
         RemoveCustomType("AbilityContainer");
+        RemoveCustomType("AbilitySystem");
     }
 }
 #endif

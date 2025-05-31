@@ -142,3 +142,12 @@ public partial class EffectModifier : Resource
         }
     }
 }
+
+public enum OperationType
+{
+    Add,
+    Multiply,
+    Divide,
+    Percentage,
+    Override,
+}

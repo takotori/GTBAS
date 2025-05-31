@@ -8,20 +8,11 @@ namespace ProjectD.addons.gas.attributes;
 public partial class AttributeSet : Resource
 {
     [Export]
-    protected string attributeSetName;
-
-    [Export]
     protected Array<Attribute> attributes;
 
     public AttributeSet()
     {
         attributes = [];
-    }
-
-    public AttributeSet(Array<Attribute> attributes, string name)
-    {
-        attributeSetName = name;
-        this.attributes = attributes;
     }
 
     public bool AddAttribute(Attribute newAttribute)
@@ -62,10 +53,5 @@ public partial class AttributeSet : Resource
     public Array<Attribute> GetAttributes()
     {
         return attributes;
-    }
-
-    public string GetAttributeSetName()
-    {
-        return attributeSetName;
     }
 }
