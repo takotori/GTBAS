@@ -15,49 +15,19 @@ public partial class Attribute : Resource
     );
 
     [Export]
-    protected string attributeName;
+    public string attributeName { get; protected set; }
 
     [Export]
-    protected float baseValue;
+    public float baseValue { get; set; }
 
     [Export]
-    protected float currentValue;
+    public float currentValue { get; set; }
 
     [Export]
-    protected float minValue;
+    public float minValue { get; set; }
 
     [Export]
-    protected float maxValue = -1;
-
-    public string GetAttributeName()
-    {
-        return attributeName;
-    }
-
-    public float GetBaseValue()
-    {
-        return baseValue;
-    }
-
-    public float GetCurrentValue()
-    {
-        return currentValue;
-    }
-
-    public float GetMinValue()
-    {
-        return minValue;
-    }
-
-    public float GetMaxValue()
-    {
-        return maxValue;
-    }
-
-    public void SetAttributeName(string newName)
-    {
-        attributeName = newName;
-    }
+    public float maxValue { get; set; } = -1;
 
     public void SetCurrentValue(float newValue)
     {
@@ -69,23 +39,18 @@ public partial class Attribute : Resource
         }
     }
 
-    public void SetBaseValue(float NewValue)
+    public override bool Equals(object other)
     {
-        baseValue = NewValue;
+        if (other is Attribute otherAttribute)
+        {
+            return attributeName == otherAttribute.attributeName;
+        }
+
+        return false;
     }
 
-    public void SetMinValue(float newValue)
+    public override int GetHashCode()
     {
-        minValue = newValue;
-    }
-
-    public void SetMaxValue(float newValue)
-    {
-        maxValue = newValue;
-    }
-
-    protected bool Equals(Attribute other)
-    {
-        return attributeName == other.attributeName;
+        return attributeName.GetHashCode();
     }
 }

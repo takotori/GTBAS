@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
 using Godot;
 using Godot.Collections;
+using ProjectD.scripts;
 using Attribute = ProjectD.addons.gas.attributes.Attribute;
 
 namespace ProjectD.addons.gas.effects;
@@ -28,19 +30,19 @@ public partial class EffectModifier : Resource
         switch (operand)
         {
             case OperationType.Add:
-                attribute.SetCurrentValue(attribute.GetCurrentValue() + value);
+                attribute.SetCurrentValue(attribute.currentValue + value);
                 break;
             case OperationType.Multiply:
-                attribute.SetCurrentValue(attribute.GetCurrentValue() * value);
+                attribute.SetCurrentValue(attribute.currentValue * value);
                 break;
             case OperationType.Divide:
                 attribute.SetCurrentValue(
-                    Math.Abs(value) < float.Epsilon ? 0 : attribute.GetCurrentValue() / value
+                    Math.Abs(value) < float.Epsilon ? 0 : attribute.currentValue / value
                 );
                 break;
             case OperationType.Percentage:
                 attribute.SetCurrentValue(
-                    attribute.GetCurrentValue() + attribute.GetCurrentValue() / 100 * value
+                    attribute.currentValue + attribute.currentValue / 100 * value
                 );
                 break;
             case OperationType.Override:
@@ -55,29 +57,28 @@ public partial class EffectModifier : Resource
         switch (operand)
         {
             case OperationType.Add:
-                newValue = attribute.GetCurrentValue() + value;
+                newValue = attribute.currentValue + value;
                 break;
             case OperationType.Multiply:
-                newValue = attribute.GetCurrentValue() * value;
+                newValue = attribute.currentValue * value;
                 break;
             case OperationType.Divide:
-                newValue =
-                    Math.Abs(value) < float.Epsilon ? 0 : attribute.GetCurrentValue() / value;
+                newValue = Math.Abs(value) < float.Epsilon ? 0 : attribute.currentValue / value;
                 break;
             case OperationType.Percentage:
-                newValue = attribute.GetCurrentValue() + attribute.GetCurrentValue() / 100 * value;
+                newValue = attribute.currentValue + attribute.currentValue / 100 * value;
                 break;
             case OperationType.Override:
                 newValue = value;
                 break;
         }
 
-        if (Math.Abs(attribute.GetMaxValue() - -1) < 0.1f)
+        if (Math.Abs(attribute.maxValue - -1) < 0.1f)
         {
-            return newValue > attribute.GetMinValue();
+            return newValue > attribute.minValue;
         }
 
-        return newValue > attribute.GetMinValue() && newValue <= attribute.GetMaxValue();
+        return newValue > attribute.minValue && newValue <= attribute.maxValue;
     }
 
     public string GetAffectedAttributeName()
@@ -114,31 +115,8 @@ public partial class EffectModifier : Resource
     {
         if (property["name"].AsStringName() == PropertyName.affectedAttributeName)
         {
-            // todo maybe do this in an autoload, so we don't have to do it every time
-            var types = AppDomain
-                .CurrentDomain.GetAssemblies()
-                .SelectMany(ass => ass.GetTypes())
-                .Where(type =>
-                    type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Attribute))
-                )
-                .ToList();
-
-            HashSet<string> attributeNames = [];
-            foreach (var type in types)
-            {
-                attributeNames.Add(
-                    type.GetField(
-                            "attributeName",
-                            BindingFlags.NonPublic
-                                | BindingFlags.Instance
-                                | BindingFlags.FlattenHierarchy
-                        )
-                        ?.GetValue(Activator.CreateInstance(type)) as string
-                );
-            }
-
             property["hint"] = (int)PropertyHint.Enum;
-            property["hint_string"] = string.Join(",", attributeNames);
+            property["hint_string"] = string.Join(",", Constants.Attributes);
         }
     }
 }

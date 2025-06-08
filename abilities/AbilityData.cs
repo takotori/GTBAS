@@ -73,4 +73,19 @@ public partial class AbilityData : Resource
     {
         pattern = newPattern;
     }
+
+    public override bool Equals(object other)
+    {
+        if (other is AbilityData otherAttribute)
+        {
+            return abilityName == otherAttribute.GetAbilityName();
+        }
+
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return abilityName.GetHashCode();
+    }
 }

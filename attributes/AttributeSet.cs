@@ -1,4 +1,6 @@
-﻿using Godot;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Godot;
 using Godot.Collections;
 
 namespace ProjectD.addons.gas.attributes;
@@ -7,29 +9,25 @@ namespace ProjectD.addons.gas.attributes;
 [GlobalClass]
 public partial class AttributeSet : Resource
 {
+    [Signal]
+    public delegate void OnAttributeChangedEventHandler(
+        Attribute attribute,
+        float oldValue,
+        float newValue
+    );
+
     [Export]
-    protected Array<Attribute> attributes;
+    protected Array<Attribute> attributes = [];
 
-    public AttributeSet()
+    public void Init()
     {
-        attributes = [];
-    }
+        IsValid();
+        ResetAttributes();
 
-    public bool AddAttribute(Attribute newAttribute)
-    {
-        if (attributes.Contains(newAttribute))
-            return false;
-        attributes.Add(newAttribute);
-
-        return true;
-    }
-
-    public bool RemoveAttribute(Attribute attribute)
-    {
-        if (!attributes.Contains(attribute))
-            return false;
-        attributes.Remove(attribute);
-        return true;
+        foreach (var attribute in attributes)
+        {
+            attribute.AttributeChanged += AttributeChanged;
+        }
     }
 
     public bool HasAttribute(Attribute attribute)
@@ -37,21 +35,61 @@ public partial class AttributeSet : Resource
         return attributes.Contains(attribute);
     }
 
-    public Attribute FindByName(string name)
+    public bool HasAllAttributes(List<string> attributeNames)
     {
-        foreach (var attribute in attributes)
-        {
-            if (attribute.GetAttributeName() == name)
-            {
-                return attribute;
-            }
-        }
+        var attributeNameSet = attributes.Select(a => a.attributeName).ToHashSet();
+        return attributeNames.All(name => attributeNameSet.Contains(name));
+    }
 
-        return null;
+    public Attribute GetAttributeByName(string name)
+    {
+        return attributes.Single(a => a.attributeName == name);
+    }
+
+    public List<Attribute> GetAttributesByName(HashSet<string> attributeNames)
+    {
+        return attributeNames.Select(GetAttributeByName).ToList();
     }
 
     public Array<Attribute> GetAttributes()
     {
         return attributes;
+    }
+
+    private void ResetAttributes()
+    {
+        foreach (var attribute in attributes)
+        {
+            attribute.SetCurrentValue(attribute.baseValue);
+        }
+    }
+
+    private void AttributeChanged(Attribute attribute, float oldValue, float newValue)
+    {
+        EmitSignal("OnAttributeChanged", attribute, oldValue, newValue);
+    }
+
+    private void IsValid()
+    {
+        if (attributes.Count == 0)
+        {
+            GD.PushError("AttributeSet has no attributes.");
+        }
+
+        var uniqueAttributes = attributes.Select(a => a.attributeName).ToHashSet();
+        if (uniqueAttributes.Count != attributes.Count)
+        {
+            GD.PushError("AttributeSet contains duplicate attribute names.");
+        }
+
+        foreach (var attribute in attributes)
+        {
+            if (attribute.baseValue <= 0)
+            {
+                GD.PushError(
+                    $"Attribute {attribute.attributeName} has a negative or zero base value."
+                );
+            }
+        }
     }
 }

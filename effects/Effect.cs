@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
-using Attribute = ProjectD.addons.gas.attributes.Attribute;
 
 namespace ProjectD.addons.gas.effects;
 
@@ -40,14 +38,16 @@ public partial class Effect : Resource
 
     public EffectCalculation EffectCalculation { get; set; }
 
-    public void ApplyEffect(List<Attribute> attributes)
+    public void ApplyEffect(AbilitySystem caster, AbilitySystem target)
     {
+        if (EffectCalculation is null)
+        {
+            return;
+        }
+
         foreach (var effectModifier in effectModifiers)
         {
-            var attribute = attributes.First(a =>
-                a.GetAttributeName() == effectModifier.GetAffectedAttributeName()
-            );
-            effectModifier.Operate(attribute);
+            EffectCalculation.CalculateAndExecuteEffect(caster, target, effectModifier);
         }
     }
 
