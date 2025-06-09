@@ -50,7 +50,11 @@ public partial class AttributeSet : Resource
     {
         return attributes;
     }
-
+    public void SetAttributes(Array<Attribute> newAttributes)
+    {
+        attributes = newAttributes;
+    }
+    
     private void ResetAttributes()
     {
         foreach (var attribute in attributes)
