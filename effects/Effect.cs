@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using ProjectD.addons.gas.execution;
 
 namespace ProjectD.addons.gas.effects;
 
@@ -9,7 +11,6 @@ namespace ProjectD.addons.gas.effects;
 [GlobalClass]
 public partial class Effect : Resource
 {
-    private EffectExecution _effectExecution;
     private int currentDuration;
     private int currentStacks;
 
@@ -23,31 +24,54 @@ public partial class Effect : Resource
     protected int maxStacks;
 
     [Export]
-    protected EffectExecution effectExecution
-    {
-        get => _effectExecution;
-        set
-        {
-            _effectExecution = value;
-            NotifyPropertyListChanged();
-        }
-    }
+    protected EffectTiming effectTiming;
 
     [Export]
     protected EffectModifier[] effectModifiers;
 
-    public EffectCalculation EffectCalculation { get; set; }
+    [Export]
+    public EffectCalculationType effectCalculationType
+    {
+        get => _effectCalculationType;
+        set
+        {
+            _effectCalculationType = value;
+            NotifyPropertyListChanged();
+        }
+    }
+
+    public EffectCalculation effectCalculation { get; set; }
+
+    private EffectCalculationType _effectCalculationType;
 
     public void ApplyEffect(AbilitySystem caster, AbilitySystem target)
     {
-        if (EffectCalculation is null)
+        switch (effectCalculationType)
         {
-            return;
-        }
+            case EffectCalculationType.ScalableFloat:
+                foreach (var effectModifier in effectModifiers)
+                {
+                    var attribute = target
+                        .GetAttributeSet()
+                        .GetAttributeByName(effectModifier.GetAffectedAttributeName());
 
-        foreach (var effectModifier in effectModifiers)
-        {
-            EffectCalculation.CalculateAndExecuteEffect(caster, target, effectModifier);
+                    effectModifier.Operate(attribute);
+                }
+                break;
+            case EffectCalculationType.CustomCalculationClass:
+                if (effectCalculation is null)
+                {
+                    return;
+                }
+
+                foreach (var effectModifier in effectModifiers)
+                {
+                    effectCalculation.CalculateAndExecuteEffect(caster, target, effectModifier);
+                }
+
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -55,12 +79,12 @@ public partial class Effect : Resource
     {
         var properties = new Array<Dictionary>();
 
-        if (effectExecution == EffectExecution.Instant)
+        if (effectCalculationType == EffectCalculationType.CustomCalculationClass)
         {
             properties.Add(
                 new Dictionary
                 {
-                    { "name", "EffectCalculation" },
+                    { "name", nameof(effectCalculation) },
                     { "type", (int)Variant.Type.Object },
                     { "usage", (int)PropertyUsageFlags.Default },
                     { "hint", (int)PropertyHint.ResourceType },
@@ -102,9 +126,9 @@ public partial class Effect : Resource
         return maxStacks;
     }
 
-    public EffectExecution GetEffectExecution()
+    public EffectTiming GetEffectExecution()
     {
-        return effectExecution;
+        return effectTiming;
     }
 
     public EffectModifier[] GetEffectModifiers()
@@ -137,9 +161,9 @@ public partial class Effect : Resource
         maxStacks = newMaxStacks;
     }
 
-    public void SetEffectExecution(EffectExecution newExecution)
+    public void SetEffectExecution(EffectTiming newTiming)
     {
-        effectExecution = newExecution;
+        effectTiming = newTiming;
     }
 
     public void SetEffectModifiers(EffectModifier[] newModifiers)

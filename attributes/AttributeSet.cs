@@ -30,11 +30,6 @@ public partial class AttributeSet : Resource
         }
     }
 
-    public bool HasAttribute(Attribute attribute)
-    {
-        return attributes.Contains(attribute);
-    }
-
     public bool HasAllAttributes(List<string> attributeNames)
     {
         var attributeNameSet = attributes.Select(a => a.attributeName).ToHashSet();
@@ -84,7 +79,7 @@ public partial class AttributeSet : Resource
 
         foreach (var attribute in attributes)
         {
-            if (attribute.baseValue <= 0)
+            if (attribute.baseValue < 0)
             {
                 GD.PushError(
                     $"Attribute {attribute.attributeName} has a negative or zero base value."

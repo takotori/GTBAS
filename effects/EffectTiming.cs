@@ -1,6 +1,6 @@
 ﻿namespace ProjectD.addons.gas.effects;
 
-public enum EffectExecution
+public enum EffectTiming
 {
     Instant,
     EndOfPlayerTurn,

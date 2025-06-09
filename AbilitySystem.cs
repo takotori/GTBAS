@@ -185,6 +185,14 @@ public partial class AbilitySystem : Node
 
     #region Effects
 
+    public void ApplyEffectOnSelf(List<Effect> effects)
+    {
+        foreach (var effect in effects)
+        {
+            effect.ApplyEffect(this, this);
+        }
+    }
+
     public void ApplyEffectOnTarget(AbilitySystem target, List<Effect> effects)
     {
         if (target is null || !target.AreEffectsValid(effects))
