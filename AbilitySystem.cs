@@ -46,6 +46,11 @@ public partial class AbilitySystem : Node
         abilities.RemoveAll(a => a.GetAbilityName() == abilityName);
     }
 
+    public void SetAbilities(List<AbilityData> newAbilities)
+    {
+        abilities = newAbilities;
+    }
+
     public AbilityData GetAbility(string abilityName)
     {
         return abilities.First(a => a.GetAbilityName() == abilityName);
@@ -222,5 +227,10 @@ public partial class AbilitySystem : Node
     public AttributeSet GetAttributeSet()
     {
         return attributeSet;
+    }
+
+    public void SetAttributeSet(AttributeSet newAttributeSet)
+    {
+        attributeSet = newAttributeSet;
     }
 }
