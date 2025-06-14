@@ -124,6 +124,39 @@ public partial class AbilitySystem : Node
         return ActivateAbility(caster, targetPosition, abilityData, targets);
     }
 
+    public bool TryActivateAbilityWithoutAnimation(
+        AbilitySystem caster,
+        List<AbilitySystem> targets,
+        AbilityData abilityData
+    )
+    {
+        // todo is in range should be handled somewhere else
+        // && IsInRange(abilityData, caster, targetTile)
+        // is valid target as well
+
+        if (!CanActivateAbility(abilityData) || targets.Count == 0)
+            return false;
+
+        return ActivateAbilityWithoutAnimation(caster, abilityData, targets);
+    }
+
+    private bool ActivateAbilityWithoutAnimation(
+        AbilitySystem caster,
+        AbilityData abilityData,
+        List<AbilitySystem> targets
+    )
+    {
+        CommitAbility(abilityData);
+        foreach (var target in targets)
+        {
+            if (target is not null)
+            {
+                ApplyEffectOnTarget(target, abilityData.GetEffects().ToList());
+            }
+        }
+        return true;
+    }
+
     private bool ActivateAbility(
         AbilitySystem caster,
         Vector3 targetPosition,
