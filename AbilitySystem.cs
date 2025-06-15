@@ -96,52 +96,6 @@ public partial class AbilitySystem : Node
         );
     }
 
-    private bool ActivateAbilityWithoutAnimation(
-        AbilityData abilityData,
-        List<AttributeSet> targetAttributeSets
-    )
-    {
-        return abilitySystemService.ActivateAbilityWithoutAnimation(
-            attributeSet,
-            abilityData,
-            targetAttributeSets
-        );
-    }
-
-    private bool ActivateAbility(
-        AbilitySystem caster,
-        Vector3 targetPosition,
-        AbilityData abilityData,
-        List<AttributeSet> targets
-    )
-    {
-        var activateAbility = abilitySystemService.ActivateAbility(
-            attributeSet,
-            targetPosition,
-            abilityData,
-            targets,
-            this
-        );
-
-        if (activateAbility != null)
-        {
-            AddChild(activateAbility);
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool HasAbility(AbilityData abilityData)
-    {
-        return abilitySystemService.HasAbility(abilities, abilityData);
-    }
-
-    private void CommitAbility(AbilityData ability)
-    {
-        abilitySystemService.CommitAbility(attributeSet, ability);
-    }
-
     public void ApplyEffectOnSelf(List<Effect> effects)
     {
         abilitySystemService.ApplyEffectOnSelf(attributeSet, effects);
@@ -150,11 +104,6 @@ public partial class AbilitySystem : Node
     public void ApplyEffectOnTarget(AttributeSet targetAttributeSet, List<Effect> effects)
     {
         abilitySystemService.ApplyEffectOnTarget(attributeSet, targetAttributeSet, effects);
-    }
-
-    private bool AreEffectsValid(List<Effect> effects)
-    {
-        return abilitySystemService.AreEffectsValid(attributeSet, effects);
     }
 
     public List<AbilityData> GetAbilities()

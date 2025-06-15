@@ -108,7 +108,7 @@ public class AbilitySystemService
         return ability is not null;
     }
 
-    public Ability ActivateAbility(
+    private Ability ActivateAbility(
         AttributeSet casterAttributeSet,
         Vector3 targetPosition,
         AbilityData abilityData,
@@ -181,54 +181,6 @@ public class AbilitySystemService
         );
     }
 
-    public bool ActivateAbilityWithoutAnimation(
-        AttributeSet casterAttributeSet,
-        AbilityData abilityData,
-        List<AttributeSet> targetAttributeSets
-    )
-    {
-        CommitAbility(casterAttributeSet, abilityData);
-        foreach (var targetAttributeSet in targetAttributeSets)
-        {
-            if (targetAttributeSet is not null)
-            {
-                ApplyEffectOnTarget(
-                    casterAttributeSet,
-                    targetAttributeSet,
-                    abilityData.GetEffects().ToList()
-                );
-            }
-        }
-        return true;
-    }
-
-    public bool HasAbility(List<AbilityData> abilities, AbilityData abilityData)
-    {
-        return abilities.Contains(abilityData);
-    }
-
-    public void CommitAbility(AttributeSet attributeSet, AbilityData ability)
-    {
-        foreach (var abilityCost in ability.GetCosts())
-        {
-            var attributes = attributeSet.GetAttributesByName(
-                abilityCost.GetAffectedAttributeNames()
-            );
-            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
-                return;
-
-            foreach (var effectCost in abilityCost.GetEffectModifiers())
-            {
-                foreach (var attribute in attributes)
-                {
-                    effectCost.Operate(attribute);
-                }
-            }
-        }
-    }
-
-    #region Effects
-
     public void ApplyEffectOnSelf(AttributeSet caster, List<Effect> effects)
     {
         foreach (var effect in effects)
@@ -254,7 +206,7 @@ public class AbilitySystemService
         }
     }
 
-    public bool AreEffectsValid(AttributeSet casterAttributeSet, List<Effect> effects)
+    private bool AreEffectsValid(AttributeSet casterAttributeSet, List<Effect> effects)
     {
         var affectedAttributes = effects.SelectMany(e => e.GetAffectedAttributeNames()).ToList();
         if (!casterAttributeSet.HasAllAttributes(affectedAttributes))
@@ -265,5 +217,49 @@ public class AbilitySystemService
         return true;
     }
 
-    #endregion
+    private bool ActivateAbilityWithoutAnimation(
+        AttributeSet casterAttributeSet,
+        AbilityData abilityData,
+        List<AttributeSet> targetAttributeSets
+    )
+    {
+        CommitAbility(casterAttributeSet, abilityData);
+        foreach (var targetAttributeSet in targetAttributeSets)
+        {
+            if (targetAttributeSet is not null)
+            {
+                ApplyEffectOnTarget(
+                    casterAttributeSet,
+                    targetAttributeSet,
+                    abilityData.GetEffects().ToList()
+                );
+            }
+        }
+        return true;
+    }
+
+    private void CommitAbility(AttributeSet attributeSet, AbilityData ability)
+    {
+        foreach (var abilityCost in ability.GetCosts())
+        {
+            var attributes = attributeSet.GetAttributesByName(
+                abilityCost.GetAffectedAttributeNames()
+            );
+            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
+                return;
+
+            foreach (var effectCost in abilityCost.GetEffectModifiers())
+            {
+                foreach (var attribute in attributes)
+                {
+                    effectCost.Operate(attribute);
+                }
+            }
+        }
+    }
+
+    private bool HasAbility(List<AbilityData> abilities, AbilityData abilityData)
+    {
+        return abilities.Contains(abilityData);
+    }
 }
