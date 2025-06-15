@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using ProjectD.addons.gas.abilities;
@@ -20,54 +19,37 @@ public partial class AbilitySystem : Node
     private List<AbilityData> abilities = [];
     private List<Effect> activeEffects = [];
 
+    private AbilitySystemService abilitySystemService;
+
     public override void _Ready()
     {
         attributeSet.Init();
+        abilitySystemService = new AbilitySystemService();
+
         foreach (var defaultAbility in defaultAbilities)
         {
             AddAbility(defaultAbility);
         }
     }
 
-    #region Abilities
-
     public void AddAbility(AbilityData abilityData)
     {
-        if (abilities.Contains(abilityData))
-        {
-            throw new ArgumentException($"Ability {abilityData.GetAbilityName()} already exists");
-        }
-
-        abilities.Add(abilityData);
+        abilitySystemService.AddAbility(abilities, abilityData);
     }
 
     public void RemoveAbility(string abilityName)
     {
-        abilities.RemoveAll(a => a.GetAbilityName() == abilityName);
-    }
-
-    public void SetAbilities(List<AbilityData> newAbilities)
-    {
-        abilities = newAbilities;
+        abilitySystemService.RemoveAbility(abilities, abilityName);
     }
 
     public AbilityData GetAbility(string abilityName)
     {
-        return abilities.First(a => a.GetAbilityName() == abilityName);
+        return abilitySystemService.GetAbility(abilities, abilityName);
     }
 
     public AbilityData GetAbility(int index)
     {
-        return abilities.ElementAtOrDefault(index)
-            ?? throw new ArgumentOutOfRangeException(
-                nameof(index),
-                "No ability found at the given index."
-            );
-    }
-
-    public List<AbilityData> GetAbilities()
-    {
-        return abilities;
+        return abilitySystemService.GetAbility(abilities, index);
     }
 
     public List<AbilityData> GetAvailableAbilities()
@@ -77,193 +59,111 @@ public partial class AbilitySystem : Node
 
     public bool CanActivateAbility(string abilityName)
     {
-        var ability = GetAbility(abilityName);
-        return CanActivateAbility(ability);
+        return abilitySystemService.CanActivateAbility(attributeSet, abilities, abilityName);
     }
 
     public bool CanActivateAbility(AbilityData abilityData)
     {
-        if (!HasAbility(abilityData))
-        {
-            return false;
-        }
-
-        foreach (var cost in abilityData.GetCosts())
-        {
-            var attributes = attributeSet.GetAttributesByName(cost.GetAffectedAttributeNames());
-            if (attributes.Count != cost.GetAffectedAttributeNames().Count)
-                return false;
-
-            foreach (var effectCost in cost.GetEffectModifiers())
-            {
-                if (attributes.Any(attribute => !effectCost.CanOperate(attribute)))
-                {
-                    // todo emit signal that cost are too high
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return abilitySystemService.CanActivateAbility(attributeSet, abilities, abilityData);
     }
 
     public bool TryActivateAbility(
-        AbilitySystem caster,
         Vector3 targetPosition,
-        List<AbilitySystem> targets,
+        List<AttributeSet> targetAttributeSets,
         AbilityData abilityData
     )
     {
-        // todo is in range should be handled somewhere else
-        // && IsInRange(abilityData, caster, targetTile)
-        // is valid target as well
-
-        if (!CanActivateAbility(abilityData) || targets.Count == 0)
-            return false;
-
-        return ActivateAbility(caster, targetPosition, abilityData, targets);
+        return abilitySystemService.TryActivateAbility(
+            attributeSet,
+            abilities,
+            targetPosition,
+            targetAttributeSets,
+            abilityData,
+            this
+        );
     }
 
     public bool TryActivateAbilityWithoutAnimation(
-        AbilitySystem caster,
-        List<AbilitySystem> targets,
+        List<AttributeSet> targetAttributeSets,
         AbilityData abilityData
     )
     {
-        // todo is in range should be handled somewhere else
-        // && IsInRange(abilityData, caster, targetTile)
-        // is valid target as well
-
-        if (!CanActivateAbility(abilityData) || targets.Count == 0)
-            return false;
-
-        return ActivateAbilityWithoutAnimation(caster, abilityData, targets);
+        return abilitySystemService.TryActivateAbilityWithoutAnimation(
+            attributeSet,
+            abilities,
+            targetAttributeSets,
+            abilityData
+        );
     }
 
     private bool ActivateAbilityWithoutAnimation(
-        AbilitySystem caster,
         AbilityData abilityData,
-        List<AbilitySystem> targets
+        List<AttributeSet> targetAttributeSets
     )
     {
-        CommitAbility(abilityData);
-        foreach (var target in targets)
-        {
-            if (target is not null)
-            {
-                ApplyEffectOnTarget(target, abilityData.GetEffects().ToList());
-            }
-        }
-        return true;
+        return abilitySystemService.ActivateAbilityWithoutAnimation(
+            attributeSet,
+            abilityData,
+            targetAttributeSets
+        );
     }
 
     private bool ActivateAbility(
         AbilitySystem caster,
         Vector3 targetPosition,
         AbilityData abilityData,
-        List<AbilitySystem> targets
+        List<AttributeSet> targets
     )
     {
-        CommitAbility(abilityData);
-        var abilityNode = abilityData.GetAbilityScene().Instantiate();
-        AddChild(abilityNode);
+        var activateAbility = abilitySystemService.ActivateAbility(
+            attributeSet,
+            targetPosition,
+            abilityData,
+            targets,
+            this
+        );
 
-        if (abilityNode is Ability ability)
+        if (activateAbility != null)
         {
-            ability.OnEffectTriggered += OnEffectTriggered(abilityData, targets);
-            ability.ActivateAbility(targetPosition);
-            // events.EmitSignal("OnAbilityActivated");
+            AddChild(activateAbility);
             return true;
         }
 
         return false;
     }
 
-    private EventHandler OnEffectTriggered(AbilityData abilityData, List<AbilitySystem> targets)
-    {
-        return (_, _) =>
-        {
-            foreach (var target in targets)
-            {
-                if (target is not null)
-                {
-                    ApplyEffectOnTarget(target, abilityData.GetEffects().ToList());
-                }
-            }
-        };
-    }
-
     private bool HasAbility(AbilityData abilityData)
     {
-        return defaultAbilities.Contains(abilityData);
+        return abilitySystemService.HasAbility(abilities, abilityData);
     }
 
     private void CommitAbility(AbilityData ability)
     {
-        foreach (var abilityCost in ability.GetCosts())
-        {
-            var attributes = attributeSet.GetAttributesByName(
-                abilityCost.GetAffectedAttributeNames()
-            );
-            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
-                return;
-
-            foreach (var effectCost in abilityCost.GetEffectModifiers())
-            {
-                foreach (var attribute in attributes)
-                {
-                    effectCost.Operate(attribute);
-                }
-            }
-        }
+        abilitySystemService.CommitAbility(attributeSet, ability);
     }
-
-    #endregion
-
-
-    #region Effects
 
     public void ApplyEffectOnSelf(List<Effect> effects)
     {
-        foreach (var effect in effects)
-        {
-            effect.ApplyEffect(this, this);
-        }
+        abilitySystemService.ApplyEffectOnSelf(attributeSet, effects);
     }
 
-    public void ApplyEffectOnTarget(AbilitySystem target, List<Effect> effects)
+    public void ApplyEffectOnTarget(AttributeSet targetAttributeSet, List<Effect> effects)
     {
-        if (target is null || !target.AreEffectsValid(effects))
-        {
-            return;
-        }
-
-        foreach (var effect in effects)
-        {
-            effect.ApplyEffect(this, target);
-        }
+        abilitySystemService.ApplyEffectOnTarget(attributeSet, targetAttributeSet, effects);
     }
 
     private bool AreEffectsValid(List<Effect> effects)
     {
-        var affectedAttributes = effects.SelectMany(e => e.GetAffectedAttributeNames()).ToList();
-        if (!attributeSet.HasAllAttributes(affectedAttributes))
-        {
-            return false;
-        }
-
-        return true;
+        return abilitySystemService.AreEffectsValid(attributeSet, effects);
     }
 
-    #endregion
+    public List<AbilityData> GetAbilities()
+    {
+        return abilities;
+    }
 
     public AttributeSet GetAttributeSet()
     {
         return attributeSet;
-    }
-
-    public void SetAttributeSet(AttributeSet newAttributeSet)
-    {
-        attributeSet = newAttributeSet;
     }
 }

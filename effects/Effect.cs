@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using ProjectD.addons.gas.attributes;
 using ProjectD.addons.gas.execution;
 
 namespace ProjectD.addons.gas.effects;
@@ -44,16 +45,16 @@ public partial class Effect : Resource
 
     private EffectCalculationType _effectCalculationType;
 
-    public void ApplyEffect(AbilitySystem caster, AbilitySystem target)
+    public void ApplyEffect(AttributeSet casterAttributeSet, AttributeSet targetAttributeSet)
     {
         switch (effectCalculationType)
         {
             case EffectCalculationType.ScalableFloat:
                 foreach (var effectModifier in effectModifiers)
                 {
-                    var attribute = target
-                        .GetAttributeSet()
-                        .GetAttributeByName(effectModifier.GetAffectedAttributeName());
+                    var attribute = targetAttributeSet.GetAttributeByName(
+                        effectModifier.GetAffectedAttributeName()
+                    );
 
                     effectModifier.Operate(attribute);
                 }
@@ -66,7 +67,11 @@ public partial class Effect : Resource
 
                 foreach (var effectModifier in effectModifiers)
                 {
-                    effectCalculation.CalculateAndExecuteEffect(caster, target, effectModifier);
+                    effectCalculation.CalculateAndExecuteEffect(
+                        casterAttributeSet,
+                        targetAttributeSet,
+                        effectModifier
+                    );
                 }
 
                 break;

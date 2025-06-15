@@ -1,4 +1,5 @@
 ﻿using Godot;
+using ProjectD.addons.gas.attributes;
 using ProjectD.addons.gas.effects;
 
 namespace ProjectD.addons.gas.execution;
@@ -8,8 +9,8 @@ namespace ProjectD.addons.gas.execution;
 public partial class EffectCalculation : Resource
 {
     public virtual EffectCalculationOutput CalculateEffect(
-        AbilitySystem caster,
-        AbilitySystem target,
+        AttributeSet casterAttributeSet,
+        AttributeSet targetAttributeSet,
         EffectModifier effectModifier
     )
     {
@@ -17,11 +18,11 @@ public partial class EffectCalculation : Resource
     }
 
     public virtual void CalculateAndExecuteEffect(
-        AbilitySystem caster,
-        AbilitySystem target,
+        AttributeSet casterAttributeSet,
+        AttributeSet targetAttributeSet,
         EffectModifier effectModifier
     )
     {
-        CalculateEffect(caster, target, effectModifier);
+        CalculateEffect(casterAttributeSet, targetAttributeSet, effectModifier);
     }
 }
