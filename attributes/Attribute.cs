@@ -29,6 +29,11 @@ public partial class Attribute : Resource
     [Export]
     public float maxValue { get; set; } = -1;
 
+    public Attribute()
+    {
+        SetLocalToScene(true);
+    }
+
     public void SetCurrentValue(float newValue)
     {
         var oldValue = currentValue;
