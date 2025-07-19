@@ -21,6 +21,8 @@ public partial class AbilitySystem : Node
 
     private AbilitySystemService abilitySystemService;
 
+    private Node owner;
+
     public override void _Ready()
     {
         attributeSet.Init();
@@ -30,6 +32,13 @@ public partial class AbilitySystem : Node
         {
             AddAbility(defaultAbility);
         }
+
+        Init();
+    }
+
+    protected virtual void Init()
+    {
+        owner = GetParent();
     }
 
     public void AddAbility(AbilityData abilityData)
@@ -114,5 +123,10 @@ public partial class AbilitySystem : Node
     public AttributeSet GetAttributeSet()
     {
         return attributeSet;
+    }
+
+    public virtual Node GetOwnerActor()
+    {
+        return owner;
     }
 }
