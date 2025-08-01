@@ -54,8 +54,8 @@ public partial class Ability : Node3D
         var abilityAoeReachablePositions = PatternCalculator.GetAoeAbilityRange(
             GetOwnerActor().currentTileIndex,
             targetTile,
-            ability.GetPattern().AoePattern,
-            ability.GetPattern().MinMaxAoeRange
+            ability.pattern.AoePattern,
+            ability.pattern.MinMaxAoeRange
         );
 
         var abilityReachableTiles = navigation

@@ -20,13 +20,13 @@ public class AbilitySystemService
             return false;
         }
 
-        foreach (var cost in abilityData.GetCosts())
+        foreach (var cost in abilityData.costs)
         {
             var attributes = attributeSet.GetAttributesByName(cost.GetAffectedAttributeNames());
             if (attributes.Count != cost.GetAffectedAttributeNames().Count)
                 return false;
 
-            foreach (var effectCost in cost.GetEffectModifiers())
+            foreach (var effectCost in cost.effectModifiers)
             {
                 if (attributes.Any(attribute => !effectCost.CanOperate(attribute)))
                 {
@@ -105,7 +105,7 @@ public class AbilitySystemService
                 ApplyEffectOnTarget(
                     casterAttributeSet,
                     targetAttributeSet,
-                    abilityData.GetEffects().ToList()
+                    abilityData.effects.ToList()
                 );
             }
         }
@@ -114,7 +114,7 @@ public class AbilitySystemService
 
     private void CommitAbility(AttributeSet attributeSet, AbilityData ability)
     {
-        foreach (var abilityCost in ability.GetCosts())
+        foreach (var abilityCost in ability.costs)
         {
             var attributes = attributeSet.GetAttributesByName(
                 abilityCost.GetAffectedAttributeNames()
@@ -122,7 +122,7 @@ public class AbilitySystemService
             if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
                 return;
 
-            foreach (var effectCost in abilityCost.GetEffectModifiers())
+            foreach (var effectCost in abilityCost.effectModifiers)
             {
                 foreach (var attribute in attributes)
                 {

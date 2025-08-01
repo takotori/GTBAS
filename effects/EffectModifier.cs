@@ -13,13 +13,13 @@ public partial class EffectModifier : Resource
     // todo value is currently hard coded, make it scale by something
 
     [Export]
-    protected string affectedAttributeName;
+    public string affectedAttributeName { get; private set; }
 
     [Export]
-    protected float value;
+    public float value { get; private set; }
 
     [Export]
-    protected OperationType operand;
+    public OperationType operand { get; private set; }
 
     public void Operate(Attribute attribute)
     {
@@ -75,36 +75,6 @@ public partial class EffectModifier : Resource
         }
 
         return newValue > attribute.minValue && newValue <= attribute.maxValue;
-    }
-
-    public string GetAffectedAttributeName()
-    {
-        return affectedAttributeName;
-    }
-
-    public OperationType GetOperand()
-    {
-        return operand;
-    }
-
-    public float GetValue()
-    {
-        return value;
-    }
-
-    public void SetAffectedAttributeName(string newAttribute)
-    {
-        affectedAttributeName = newAttribute;
-    }
-
-    public void SetOperand(OperationType newOperand)
-    {
-        operand = newOperand;
-    }
-
-    public void SetValue(float newValue)
-    {
-        value = newValue;
     }
 
     public override void _ValidateProperty(Dictionary property)

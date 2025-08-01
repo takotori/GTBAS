@@ -16,19 +16,19 @@ public partial class Effect : Resource
     private int currentStacks;
 
     [Export]
-    protected string effectName;
+    public string effectName { get; private set; }
 
     [Export]
-    protected int maxDuration;
+    public int maxDuration { get; private set; }
 
     [Export]
-    protected int maxStacks;
+    public int maxStacks { get; private set; }
 
     [Export]
-    protected EffectTiming effectTiming;
+    public EffectTiming effectTiming { get; private set; }
 
     [Export]
-    protected EffectModifier[] effectModifiers;
+    public EffectModifier[] effectModifiers { get; set; }
 
     [Export]
     public EffectCalculationType effectCalculationType
@@ -53,7 +53,7 @@ public partial class Effect : Resource
                 foreach (var effectModifier in effectModifiers)
                 {
                     var attribute = targetAttributeSet.GetAttributeByName(
-                        effectModifier.GetAffectedAttributeName()
+                        effectModifier.affectedAttributeName
                     );
 
                     effectModifier.Operate(attribute);
@@ -101,83 +101,23 @@ public partial class Effect : Resource
         return properties;
     }
 
-    public string GetEffectName()
-    {
-        return effectName;
-    }
-
     public HashSet<string> GetAffectedAttributeNames()
     {
-        return effectModifiers.Select(e => e.GetAffectedAttributeName()).ToHashSet();
+        return effectModifiers.Select(e => e.affectedAttributeName).ToHashSet();
     }
 
-    public int GetCurrentDuration()
+    public override bool Equals(object other)
     {
-        return currentDuration;
+        if (other is Effect otherAttribute)
+        {
+            return effectName == otherAttribute.effectName;
+        }
+
+        return false;
     }
 
-    public int GetMaxDuration()
+    public override int GetHashCode()
     {
-        return maxDuration;
-    }
-
-    public int GetCurrentStacks()
-    {
-        return currentStacks;
-    }
-
-    public int GetMaxStacks()
-    {
-        return maxStacks;
-    }
-
-    public EffectTiming GetEffectExecution()
-    {
-        return effectTiming;
-    }
-
-    public EffectModifier[] GetEffectModifiers()
-    {
-        return effectModifiers;
-    }
-
-    public void SetEffectName(string newName)
-    {
-        effectName = newName;
-    }
-
-    public void SetCurrentDuration(int newDuration)
-    {
-        currentDuration = newDuration;
-    }
-
-    public void SetMaxDuration(int newDuration)
-    {
-        maxDuration = newDuration;
-    }
-
-    public void SetCurrentStacks(int newCurrentStacks)
-    {
-        currentStacks = newCurrentStacks;
-    }
-
-    public void SetMaxStacks(int newMaxStacks)
-    {
-        maxStacks = newMaxStacks;
-    }
-
-    public void SetEffectExecution(EffectTiming newTiming)
-    {
-        effectTiming = newTiming;
-    }
-
-    public void SetEffectModifiers(EffectModifier[] newModifiers)
-    {
-        effectModifiers = newModifiers;
-    }
-
-    public bool Equals(Effect other)
-    {
-        return effectName == other.effectName;
+        return effectName.GetHashCode();
     }
 }

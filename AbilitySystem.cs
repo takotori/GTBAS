@@ -43,7 +43,7 @@ public partial class AbilitySystem : Node
     {
         if (abilities.Contains(abilityData))
         {
-            throw new ArgumentException($"Ability {abilityData.GetAbilityName()} already exists");
+            throw new ArgumentException($"Ability {abilityData.abilityName} already exists");
         }
 
         abilities.Add(abilityData);
@@ -51,12 +51,12 @@ public partial class AbilitySystem : Node
 
     public void RemoveAbility(string abilityName)
     {
-        abilities.RemoveAll(a => a.GetAbilityName() == abilityName);
+        abilities.RemoveAll(a => a.abilityName == abilityName);
     }
 
     public AbilityData GetAbility(string abilityName)
     {
-        return abilities.First(a => a.GetAbilityName() == abilityName);
+        return abilities.First(a => a.abilityName == abilityName);
     }
 
     public AbilityData GetAbility(int index)
@@ -75,13 +75,13 @@ public partial class AbilitySystem : Node
             return false;
         }
 
-        foreach (var cost in abilityData.GetCosts())
+        foreach (var cost in abilityData.costs)
         {
             var attributes = attributeSet.GetAttributesByName(cost.GetAffectedAttributeNames());
             if (attributes.Count != cost.GetAffectedAttributeNames().Count)
                 return false;
 
-            foreach (var effectCost in cost.GetEffectModifiers())
+            foreach (var effectCost in cost.effectModifiers)
             {
                 if (attributes.Any(attribute => !effectCost.CanOperate(attribute)))
                 {
@@ -106,7 +106,7 @@ public partial class AbilitySystem : Node
     protected Ability ActivateAbility(Vector2I targetIndex, AbilityData abilityData)
     {
         CommitAbility(abilityData);
-        var abilityNode = abilityData.GetAbilityScene().Instantiate();
+        var abilityNode = abilityData.ability.Instantiate();
         AddChild(abilityNode);
 
         if (abilityNode is Ability ability)
@@ -122,7 +122,7 @@ public partial class AbilitySystem : Node
 
     protected void CommitAbility(AbilityData ability)
     {
-        foreach (var abilityCost in ability.GetCosts())
+        foreach (var abilityCost in ability.costs)
         {
             var attributes = attributeSet.GetAttributesByName(
                 abilityCost.GetAffectedAttributeNames()
@@ -130,7 +130,7 @@ public partial class AbilitySystem : Node
             if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
                 return;
 
-            foreach (var effectCost in abilityCost.GetEffectModifiers())
+            foreach (var effectCost in abilityCost.effectModifiers)
             {
                 foreach (var attribute in attributes)
                 {
@@ -183,7 +183,7 @@ public partial class AbilitySystem : Node
 
     private bool IsValidTarget(Vector2I targetIndex, AbilityData abilityData)
     {
-        switch (abilityData.GetPattern().CenterPoint)
+        switch (abilityData.pattern.CenterPoint)
         {
             case CenterPoint.Target:
                 var opponentUnits = GetUnitOfTeam(
