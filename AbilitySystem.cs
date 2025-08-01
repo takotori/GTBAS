@@ -68,12 +68,6 @@ public partial class AbilitySystem : Node
             );
     }
 
-    public bool CanActivateAbility(string abilityName)
-    {
-        var ability = GetAbility(abilityName);
-        return CanActivateAbility(ability);
-    }
-
     public bool CanActivateAbility(AbilityData abilityData)
     {
         if (!HasAbility(abilityData))
@@ -105,17 +99,11 @@ public partial class AbilitySystem : Node
         if (!CanActivateAbility(abilityData) || !IsValidTarget(targetIndex, abilityData))
             return false;
 
-        var targetsInRange = GetTargetsInRange(abilityData, targetIndex);
-
-        var ability = ActivateAbility(targetIndex, abilityData, targetsInRange);
+        var ability = ActivateAbility(targetIndex, abilityData);
         return ability is not null;
     }
 
-    protected Ability ActivateAbility(
-        Vector2I targetIndex,
-        AbilityData abilityData,
-        List<AttributeSet> targetAttributeSets
-    )
+    protected Ability ActivateAbility(Vector2I targetIndex, AbilityData abilityData)
     {
         CommitAbility(abilityData);
         var abilityNode = abilityData.GetAbilityScene().Instantiate();
@@ -123,30 +111,13 @@ public partial class AbilitySystem : Node
 
         if (abilityNode is Ability ability)
         {
-            ability.OnEffectTriggered += OnEffectTriggered(abilityData, targetAttributeSets);
+            ability.Init(abilityData, this);
             ability.ActivateAbility(targetIndex);
             // events.EmitSignal("OnAbilityActivated");
             return ability;
         }
 
         return null;
-    }
-
-    protected EventHandler OnEffectTriggered(
-        AbilityData abilityData,
-        List<AttributeSet> targetAttributeSets
-    )
-    {
-        return (_, _) =>
-        {
-            foreach (var target in targetAttributeSets)
-            {
-                if (target is not null)
-                {
-                    ApplyEffectOnTarget(target, abilityData.GetEffects().ToList());
-                }
-            }
-        };
     }
 
     protected void CommitAbility(AbilityData ability)
@@ -205,7 +176,7 @@ public partial class AbilitySystem : Node
         return attributeSet;
     }
 
-    protected virtual Unit GetOwnerActor()
+    public Unit GetOwnerActor()
     {
         return owner;
     }
@@ -245,30 +216,6 @@ public partial class AbilitySystem : Node
         }
 
         return false;
-    }
-
-    private List<AttributeSet> GetTargetsInRange(AbilityData ability, Vector2I targetTile)
-    {
-        var opponentUnits = GetUnitOfTeam(
-            GetOwnerActor().Team == Team.Player ? Team.Enemy : Team.Player
-        );
-
-        var abilityAoeReachablePositions = PatternCalculator.GetAoeAbilityRange(
-            GetOwnerActor().currentTileIndex,
-            targetTile,
-            ability.GetPattern().AoePattern,
-            ability.GetPattern().MinMaxAoeRange
-        );
-
-        var abilityReachableTiles = navigation
-            .GetAbilityReachableTiles(abilityAoeReachablePositions)
-            .Select(a => a.GetTileIndex())
-            .ToList();
-
-        return opponentUnits
-            .Where(u => abilityReachableTiles.Contains(u.currentTileIndex))
-            .Select(u => u.abilitySystem.GetAttributeSet())
-            .ToList();
     }
 
     private List<Unit> GetUnitOfTeam(Team team)

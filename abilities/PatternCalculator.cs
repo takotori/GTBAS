@@ -12,25 +12,15 @@ public static class PatternCalculator
         Vector2I MinMaxRange
     )
     {
-        HashSet<Vector2I> TilesInRange = [];
-        switch (Pattern)
+        var TilesInRange = Pattern switch
         {
-            case Pattern.Line:
-                TilesInRange = GetLinePattern(MinMaxRange);
-                break;
-            case Pattern.Diagonal:
-                TilesInRange = GetDiagonalPattern(MinMaxRange);
-                break;
-            case Pattern.Star:
-                TilesInRange = GetStarPattern(MinMaxRange);
-                break;
-            case Pattern.Diamond:
-                TilesInRange = GetDiamondPattern(MinMaxRange);
-                break;
-            case Pattern.Square:
-                TilesInRange = GetSquarePattern(MinMaxRange);
-                break;
-        }
+            Pattern.Line => GetLinePattern(MinMaxRange),
+            Pattern.Diagonal => GetDiagonalPattern(MinMaxRange),
+            Pattern.Star => GetStarPattern(MinMaxRange),
+            Pattern.Diamond => GetDiamondPattern(MinMaxRange),
+            Pattern.Square => GetSquarePattern(MinMaxRange),
+            _ => throw new ArgumentOutOfRangeException(nameof(Pattern), Pattern, null),
+        };
 
         return OffsetIndexArray(TilesInRange, Target);
     }
@@ -42,31 +32,17 @@ public static class PatternCalculator
         Vector2I MinMaxRange
     )
     {
-        HashSet<Vector2I> TilesInRange = [];
         var Direction = FindRelativeDirection(Origin, Target);
-        switch (Pattern)
+        var TilesInRange = Pattern switch
         {
-            case AoePattern.Single:
-                TilesInRange.Add(new Vector2I(0, 0));
-                break;
-            case AoePattern.Line:
-                TilesInRange = GetAoeLinePattern(MinMaxRange, Direction);
-                break;
-            case AoePattern.HorizontalLine:
-                TilesInRange = GetAoeHorizontalLinePattern(MinMaxRange, Direction);
-                break;
-            case AoePattern.Diamond:
-                TilesInRange = GetDiamondPattern(MinMaxRange);
-                break;
-            case AoePattern.Square:
-                TilesInRange = GetSquarePattern(MinMaxRange);
-                break;
-            case AoePattern.Cone:
-                TilesInRange = GetAoeConePattern(MinMaxRange, Direction);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(Pattern), Pattern, null);
-        }
+            AoePattern.Single => [new Vector2I(0, 0)],
+            AoePattern.Line => GetAoeLinePattern(MinMaxRange, Direction),
+            AoePattern.HorizontalLine => GetAoeHorizontalLinePattern(MinMaxRange, Direction),
+            AoePattern.Diamond => GetDiamondPattern(MinMaxRange),
+            AoePattern.Square => GetSquarePattern(MinMaxRange),
+            AoePattern.Cone => GetAoeConePattern(MinMaxRange, Direction),
+            _ => throw new ArgumentOutOfRangeException(nameof(Pattern), Pattern, null),
+        };
 
         return OffsetIndexArray(TilesInRange, Target);
     }
@@ -92,6 +68,8 @@ public static class PatternCalculator
                 case RelativeDirection.Right:
                     TilesInRange.Add(new Vector2I(i, 0));
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Direction), Direction, null);
             }
 
         return TilesInRange;
@@ -126,6 +104,8 @@ public static class PatternCalculator
                     TilesInRange.Add(new Vector2I(i, 1));
                     TilesInRange.Add(new Vector2I(i, -1));
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Direction), Direction, null);
             }
 
         return TilesInRange;
@@ -164,6 +144,8 @@ public static class PatternCalculator
                         TilesInRange.Add(new Vector2I(i, j));
 
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Direction), Direction, null);
             }
 
             Width++;
