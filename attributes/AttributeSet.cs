@@ -17,7 +17,7 @@ public partial class AttributeSet : Resource
     );
 
     [Export]
-    protected Array<Attribute> attributes = [];
+    public Array<Attribute> attributes { get; set; } = [];
 
     public void Init()
     {
@@ -46,15 +46,6 @@ public partial class AttributeSet : Resource
         return attributeNames.Select(GetAttributeByName).ToList();
     }
 
-    public Array<Attribute> GetAttributes()
-    {
-        return attributes;
-    }
-    public void SetAttributes(Array<Attribute> newAttributes)
-    {
-        attributes = newAttributes;
-    }
-    
     private void ResetAttributes()
     {
         foreach (var attribute in attributes)
