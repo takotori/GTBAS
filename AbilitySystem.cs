@@ -15,17 +15,16 @@ namespace ProjectD.addons.gas;
 public partial class AbilitySystem : Node
 {
     [Export]
-    protected AttributeSet attributeSet;
+    public AttributeSet attributeSet { get; private set; }
 
     [Export]
-    protected AbilityData[] defaultAbilities = [];
+    private AbilityData[] defaultAbilities = [];
+
+    public List<AbilityData> abilities { get; } = [];
+    public Unit owner { get; private set; }
 
     private NavigationController navigation;
-
-    private List<AbilityData> abilities = [];
     private List<Effect> activeEffects = [];
-
-    private Unit owner;
 
     public override void _Ready()
     {
@@ -37,35 +36,6 @@ public partial class AbilitySystem : Node
         {
             AddAbility(defaultAbility);
         }
-    }
-
-    public void AddAbility(AbilityData abilityData)
-    {
-        if (abilities.Contains(abilityData))
-        {
-            throw new ArgumentException($"Ability {abilityData.abilityName} already exists");
-        }
-
-        abilities.Add(abilityData);
-    }
-
-    public void RemoveAbility(string abilityName)
-    {
-        abilities.RemoveAll(a => a.abilityName == abilityName);
-    }
-
-    public AbilityData GetAbility(string abilityName)
-    {
-        return abilities.First(a => a.abilityName == abilityName);
-    }
-
-    public AbilityData GetAbility(int index)
-    {
-        return abilities.ElementAtOrDefault(index)
-            ?? throw new ArgumentOutOfRangeException(
-                nameof(index),
-                "No ability found at the given index."
-            );
     }
 
     public bool CanActivateAbility(AbilityData abilityData)
@@ -99,45 +69,7 @@ public partial class AbilitySystem : Node
         if (!CanActivateAbility(abilityData) || !IsValidTarget(targetIndex, abilityData))
             return false;
 
-        var ability = ActivateAbility(targetIndex, abilityData);
-        return ability is not null;
-    }
-
-    protected Ability ActivateAbility(Vector2I targetIndex, AbilityData abilityData)
-    {
-        CommitAbility(abilityData);
-        var abilityNode = abilityData.ability.Instantiate();
-        AddChild(abilityNode);
-
-        if (abilityNode is Ability ability)
-        {
-            ability.Init(abilityData, this);
-            ability.ActivateAbility(targetIndex);
-            // events.EmitSignal("OnAbilityActivated");
-            return ability;
-        }
-
-        return null;
-    }
-
-    protected void CommitAbility(AbilityData ability)
-    {
-        foreach (var abilityCost in ability.costs)
-        {
-            var attributes = attributeSet.GetAttributesByName(
-                abilityCost.GetAffectedAttributeNames()
-            );
-            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
-                return;
-
-            foreach (var effectCost in abilityCost.effectModifiers)
-            {
-                foreach (var attribute in attributes)
-                {
-                    effectCost.Operate(attribute);
-                }
-            }
-        }
+        return ActivateAbility(targetIndex, abilityData);
     }
 
     public void ApplyEffectOnSelf(List<Effect> effects)
@@ -161,24 +93,41 @@ public partial class AbilitySystem : Node
         }
     }
 
-    public bool HasAbility(AbilityData abilityData)
+    private bool ActivateAbility(Vector2I targetIndex, AbilityData abilityData)
     {
-        return abilities.Contains(abilityData);
+        CommitAbility(abilityData);
+        var abilityNode = abilityData.ability.Instantiate();
+        AddChild(abilityNode);
+
+        if (abilityNode is Ability ability)
+        {
+            ability.Init(abilityData, this);
+            ability.ActivateAbility(targetIndex);
+            // events.EmitSignal("OnAbilityActivated");
+            return true;
+        }
+
+        return false;
     }
 
-    public List<AbilityData> GetAbilities()
+    private void CommitAbility(AbilityData ability)
     {
-        return abilities;
-    }
+        foreach (var abilityCost in ability.costs)
+        {
+            var attributes = attributeSet.GetAttributesByName(
+                abilityCost.GetAffectedAttributeNames()
+            );
+            if (attributes.Count != abilityCost.GetAffectedAttributeNames().Count)
+                return;
 
-    public AttributeSet GetAttributeSet()
-    {
-        return attributeSet;
-    }
-
-    public Unit GetOwnerActor()
-    {
-        return owner;
+            foreach (var effectCost in abilityCost.effectModifiers)
+            {
+                foreach (var attribute in attributes)
+                {
+                    effectCost.Operate(attribute);
+                }
+            }
+        }
     }
 
     private bool IsValidTarget(Vector2I targetIndex, AbilityData abilityData)
@@ -187,7 +136,7 @@ public partial class AbilitySystem : Node
         {
             case CenterPoint.Target:
                 var opponentUnits = GetUnitOfTeam(
-                    GetOwnerActor().Team == Team.Player ? Team.Enemy : Team.Player
+                    owner.Team == Team.Player ? Team.Enemy : Team.Player
                 );
                 if (opponentUnits.Any(u => u.currentTileIndex == targetIndex))
                 {
@@ -203,7 +152,7 @@ public partial class AbilitySystem : Node
 
                 break;
             case CenterPoint.Ally:
-                if (GetUnitOfTeam(GetOwnerActor().Team).Any(u => u.currentTileIndex == targetIndex))
+                if (GetUnitOfTeam(owner.Team).Any(u => u.currentTileIndex == targetIndex))
                 {
                     return true;
                 }
@@ -235,5 +184,39 @@ public partial class AbilitySystem : Node
         }
 
         return true;
+    }
+
+    public void AddAbility(AbilityData abilityData)
+    {
+        if (abilities.Contains(abilityData))
+        {
+            throw new ArgumentException($"Ability {abilityData.abilityName} already exists");
+        }
+
+        abilities.Add(abilityData);
+    }
+
+    public void RemoveAbility(string abilityName)
+    {
+        abilities.RemoveAll(a => a.abilityName == abilityName);
+    }
+
+    public AbilityData GetAbility(string abilityName)
+    {
+        return abilities.First(a => a.abilityName == abilityName);
+    }
+
+    public AbilityData GetAbility(int index)
+    {
+        return abilities.ElementAtOrDefault(index)
+            ?? throw new ArgumentOutOfRangeException(
+                nameof(index),
+                "No ability found at the given index."
+            );
+    }
+
+    public bool HasAbility(AbilityData abilityData)
+    {
+        return abilities.Contains(abilityData);
     }
 }

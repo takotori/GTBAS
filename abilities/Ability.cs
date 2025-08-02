@@ -65,7 +65,7 @@ public partial class Ability : Node3D
 
         return opponentUnits
             .Where(u => abilityReachableTiles.Contains(u.currentTileIndex))
-            .Select(u => u.abilitySystem.GetAttributeSet())
+            .Select(u => u.abilitySystem.attributeSet)
             .ToList();
     }
 
@@ -79,6 +79,6 @@ public partial class Ability : Node3D
 
     private Unit GetOwnerActor()
     {
-        return casterAbilitySystem.GetOwnerActor();
+        return casterAbilitySystem.owner;
     }
 }
