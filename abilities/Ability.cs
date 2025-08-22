@@ -3,7 +3,6 @@ using System.Linq;
 using Godot;
 using ProjectD.addons.gas.attributes;
 using ProjectD.scripts;
-using ProjectD.scripts.events;
 using ProjectD.scripts.maps;
 using ProjectD.scripts.units;
 
@@ -37,12 +36,12 @@ public partial class Ability : Node3D
 
     public virtual void ActivateAbility(Vector2I targetIndex)
     {
-        events.EmitSignal("OnAbilityActivated", GetOwnerActor(), abilityData);
+        events.EmitSignal(nameof(events.OnAbilityActivated), GetOwnerActor(), abilityData);
     }
 
     public virtual void EndAbility(StringName animationName)
     {
-        events.EmitSignal("OnAbilityEnded");
+        events.EmitSignal(nameof(events.OnAbilityEnded));
     }
 
     protected virtual void TriggerEffect() { }

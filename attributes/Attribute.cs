@@ -40,7 +40,7 @@ public partial class Attribute : Resource
         currentValue = newValue;
         if (Math.Abs(oldValue - newValue) > 0.1f)
         {
-            EmitSignal("AttributeChanged", this, oldValue, newValue);
+            EmitSignal(nameof(AttributeChanged), this, oldValue, newValue);
         }
     }
 

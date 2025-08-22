@@ -111,7 +111,7 @@ public partial class AbilitySystem : Node
             ability.Init(abilityData, this);
             events.OnAbilityEnded += OnMainAbilityEnded;
             ability.ActivateAbility(targetIndex);
-            events.EmitSignal("OnAbilityActivated");
+            events.EmitSignal(nameof(events.OnAbilityActivated));
             return true;
         }
         

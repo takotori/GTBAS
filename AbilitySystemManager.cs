@@ -14,8 +14,8 @@ public partial class AbilitySystemManager : Node
     private AbilitySystemEvents abilitySystemEvents;
     private Events events;
     
-    public Stack<AttributeChanged> attributesChangedThisTurn = new();
-    public Stack<AbilityActivated> abilitiesActivatedThisTurn = new();
+    public readonly Stack<AttributeChanged> attributesChangedThisTurn = new();
+    public readonly Stack<AbilityActivated> abilitiesActivatedThisTurn = new();
 
     public override void _Ready()
     {

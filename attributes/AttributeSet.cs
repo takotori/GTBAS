@@ -63,9 +63,9 @@ public partial class AttributeSet : Resource
 
     private void AttributeChanged(Attribute attribute, float oldValue, float newValue)
     {
-        EmitSignal("OnAttributeChanged", owner, attribute, oldValue, newValue);
+        EmitSignal(nameof(OnAttributeChanged), owner, attribute, oldValue, newValue);
         // todo remove top
-        events.EmitSignal("OnAttributeChanged", owner, attribute, oldValue, newValue);
+        events.EmitSignal(nameof(events.OnAttributeChanged), owner, attribute, oldValue, newValue);
     }
 
     private void IsValid()
