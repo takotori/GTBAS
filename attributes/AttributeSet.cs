@@ -2,6 +2,7 @@
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using ProjectD.scripts.units;
 
 namespace ProjectD.addons.gas.attributes;
 
@@ -9,8 +10,12 @@ namespace ProjectD.addons.gas.attributes;
 [GlobalClass]
 public partial class AttributeSet : Resource
 {
+    private AbilitySystemEvents events;
+    private Unit owner;
+    
     [Signal]
     public delegate void OnAttributeChangedEventHandler(
+        Unit owner,
         Attribute attribute,
         float oldValue,
         float newValue
@@ -19,10 +24,12 @@ public partial class AttributeSet : Resource
     [Export]
     public Array<Attribute> attributes { get; set; } = [];
 
-    public void Init()
+    public void Init(Unit owner)
     {
         IsValid();
         ResetAttributes();
+        events = AbilitySystemEvents.Instance;
+        this.owner = owner;
 
         foreach (var attribute in attributes)
         {
@@ -56,7 +63,9 @@ public partial class AttributeSet : Resource
 
     private void AttributeChanged(Attribute attribute, float oldValue, float newValue)
     {
-        EmitSignal("OnAttributeChanged", attribute, oldValue, newValue);
+        EmitSignal("OnAttributeChanged", owner, attribute, oldValue, newValue);
+        // todo remove top
+        events.EmitSignal("OnAttributeChanged", owner, attribute, oldValue, newValue);
     }
 
     private void IsValid()
@@ -83,3 +92,4 @@ public partial class AttributeSet : Resource
         }
     }
 }
+

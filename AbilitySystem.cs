@@ -25,12 +25,17 @@ public partial class AbilitySystem : Node
 
     private NavigationController navigation;
     private List<Effect> activeEffects = [];
+    
+    private AbilityData activeAbility;
+    private Vector2I activeAbilityIndex;
+    private AbilitySystemEvents events;
 
     public override void _Ready()
     {
+        events = AbilitySystemEvents.Instance;
         navigation = ServiceContainer.GetService<NavigationController>();
-        attributeSet.Init();
         owner = (Unit)GetParent();
+        attributeSet.Init(owner);
 
         foreach (var defaultAbility in defaultAbilities)
         {
@@ -101,13 +106,35 @@ public partial class AbilitySystem : Node
 
         if (abilityNode is Ability ability)
         {
+            activeAbility = abilityData;
+            activeAbilityIndex = targetIndex;
             ability.Init(abilityData, this);
+            events.OnAbilityEnded += OnMainAbilityEnded;
             ability.ActivateAbility(targetIndex);
-            // events.EmitSignal("OnAbilityActivated");
+            events.EmitSignal("OnAbilityActivated");
             return true;
         }
-
+        
         return false;
+    }
+
+    private void OnMainAbilityEnded()
+    {
+        foreach (var subAbilityData in activeAbility.subAbilities)
+        {
+            var subAbilityNode = subAbilityData.ability.Instantiate();
+            AddChild(subAbilityNode);
+
+            if (subAbilityNode is SubAbility subAbility && subAbility.CanActivateSubAbility())
+            {
+                subAbility.Init(subAbilityData, this);
+                subAbility.ActivateAbility(activeAbilityIndex);
+            }
+            else
+            {
+                subAbilityNode.QueueFree();
+            }
+        }
     }
 
     private void CommitAbility(AbilityData ability)

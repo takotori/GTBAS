@@ -12,7 +12,9 @@ namespace ProjectD.addons.gas.abilities;
 [GlobalClass]
 public partial class Ability : Node3D
 {
-    private NavigationController navigation;
+    protected NavigationController navigation;
+    protected AbilitySystemEvents events;
+    protected AbilitySystemManager manager;
     protected AnimationPlayer animationPlayer;
     protected AbilitySystem casterAbilitySystem;
     protected AbilityData abilityData;
@@ -20,6 +22,8 @@ public partial class Ability : Node3D
 
     public override void _Ready()
     {
+        events = AbilitySystemEvents.Instance;
+        manager = AbilitySystemManager.Instance;
         navigation = ServiceContainer.GetService<NavigationController>();
         animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
         animationPlayer.AnimationFinished += EndAbility;
@@ -31,11 +35,14 @@ public partial class Ability : Node3D
         this.casterAbilitySystem = casterAbilitySystem;
     }
 
-    public virtual void ActivateAbility(Vector2I targetIndex) { }
+    public virtual void ActivateAbility(Vector2I targetIndex)
+    {
+        events.EmitSignal("OnAbilityActivated", GetOwnerActor(), abilityData);
+    }
 
     public virtual void EndAbility(StringName animationName)
     {
-        Events.Instance.EmitSignal("OnAbilityEnded");
+        events.EmitSignal("OnAbilityEnded");
     }
 
     protected virtual void TriggerEffect() { }
@@ -69,7 +76,7 @@ public partial class Ability : Node3D
             .ToList();
     }
 
-    private List<Unit> GetUnitOfTeam(Team team)
+    protected List<Unit> GetUnitOfTeam(Team team)
     {
         return GetTree()
             .GetNodesInGroup(team == Team.Player ? Constants.PlayerUnits : Constants.EnemyUnits)
@@ -77,7 +84,7 @@ public partial class Ability : Node3D
             .ToList();
     }
 
-    private Unit GetOwnerActor()
+    protected Unit GetOwnerActor()
     {
         return casterAbilitySystem.owner;
     }
