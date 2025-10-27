@@ -7,6 +7,11 @@ namespace ProjectD.addons.gas;
 
 public partial class AbilitySystemEvents : Node
 {
+    // Input
+    
+    [Signal]
+    public delegate void OnAbilitySelectedEventHandler(int abilityIndex);
+    
     // Attribute System
     [Signal]
     public delegate void OnAttributeChangedEventHandler(Unit owner, Attribute attribute, float oldValue, float newValue);
